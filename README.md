@@ -36,7 +36,6 @@ By the end of this session, students will be able to:
 | 3 | Break | 10 min |
 | 4 | Lab: Functional Prototype | 90 min |
 | 5 | Wrap-Up & Reflection | 5 min |  
-| (no separate wrap-up segment — embedded in lab debrief) | | |
 |   | **Total** | **120 min** |
 
 > **Note on session structure:** This session is intentionally weighted toward the lab. The theory section is shorter than previous sessions because the primary learning happens through doing. The planning frameworks in Sections 1 and 2 are designed to be used directly during the lab — students should have them open while building.
