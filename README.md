@@ -46,14 +46,10 @@ By the end of this session, students will be able to:
 
 ### Why Planning Before Building Matters
 
-The most common mistake when building a first agent is opening the platform and starting to configure before knowing exactly what you're building. Without a plan:
+The most common mistake when building a first agent is opening the platform and starting to configure before knowing exactly what you're building. 
 
-- The system prompt grows in random directions as you remember things to add
-- Tool connections are added reactively rather than designed deliberately
-- Testing is unfocused — you don't know what "working" looks like
-- When something breaks, you don't know where to look
+<img width="932" height="275" alt="image" src="https://git.generalassemb.ly/user-attachments/assets/d2f3c45e-5a12-4f73-87f6-fea9f5706734" />
 
-A good plan takes 20–30 minutes to write. It saves hours of confused iteration.
 
 The planning framework below translates everything covered in this course into a structured set of decisions you make *before* touching a platform. It is also the foundation for the capstone project in Session 16.
 
@@ -63,6 +59,8 @@ The planning framework below translates everything covered in this course into a
 
 Fill in each section before you begin building. Every section maps directly to concepts covered in previous sessions.
 
+<img width="916" height="301" alt="image" src="https://git.generalassemb.ly/user-attachments/assets/9390079f-f62b-416e-b2a8-7d4504d9897a" />
+
 ---
 
 #### Section 1: Purpose and Audience
@@ -71,20 +69,12 @@ Fill in each section before you begin building. Every section maps directly to c
 
 Define the agent's single, specific purpose in one sentence. If you can't describe it in one sentence, it's too broad — narrow it before you build.
 
-```
-❌ Too broad:
-"An agent that helps with marketing."
+<img width="937" height="148" alt="image" src="https://git.generalassemb.ly/user-attachments/assets/8e69a8ec-19b1-420e-a830-a5ed36ae9440" />
 
-✅ Specific:
-"An agent that takes a topic or URL as input and generates 
-three social media post variations — one for LinkedIn, 
-one for Instagram, and one for X — in the brand's established tone."
-```
 
-Then answer:
-- Who is the primary user? (job role, technical level, familiarity with the tool)
-- What does this user currently do manually that the agent will replace or assist?
-- What does success look like from the user's perspective?
+**Then answer:**
+
+<img width="891" height="194" alt="image" src="https://git.generalassemb.ly/user-attachments/assets/e955efe0-b44e-464b-8463-7e482fe02040" />
 
 ---
 
@@ -306,9 +296,8 @@ AGENT PLANNING CANVAS
 
 Building an agent is not a linear process. Even with a complete plan, the first version will not work exactly as intended. This is not a failure — it is the expected starting point. The value of the plan is not that it prevents iteration; it is that it makes each iteration faster and more purposeful.
 
-```
-PLAN → BUILD → TEST → OBSERVE → REFINE → TEST AGAIN
-```
+<img width="917" height="163" alt="image" src="https://git.generalassemb.ly/user-attachments/assets/631e2005-801e-4dcf-87c5-1f531b18dbda" />
+
 
 Every cycle through this loop should answer one specific question. The most productive builds don't try to fix everything at once — they identify the single most important problem, make one change, and test again.
 
@@ -356,30 +345,8 @@ When something doesn't work, the diagnosis always starts with the same question:
 
 When testing reveals a problem, follow this sequence before making any changes:
 
-```
-1. DESCRIBE the problem precisely
-   Not: "The posts aren't good"
-   Yes: "The LinkedIn posts are consistently under 100 words, 
-         even though the prompt says 150–200 words"
+<img width="755" height="413" alt="image" src="https://git.generalassemb.ly/user-attachments/assets/b1614ca2-9f84-4511-86cb-2163e6bdcd22" />
 
-2. HYPOTHESIZE one cause
-   "The word count instruction may not be specific enough — 
-    the agent is interpreting '150–200 words' as a suggestion, 
-    not a requirement"
-
-3. MAKE one change
-   Add to system prompt: "LinkedIn posts MUST be between 150 and 200 words. 
-   Count carefully. Do not submit a post outside this range."
-
-4. TEST the same input again
-   Use the same topic that produced the problem — 
-   this controls for the variable and isolates the effect of your change
-
-5. EVALUATE
-   Did the change fix the problem? Did it introduce a new one?
-   → If fixed: document the change and test a second input
-   → If not fixed: revisit your hypothesis — the cause may be different
-```
 
 This protocol prevents the most common refinement mistake: changing multiple things at once and not knowing which change made the difference.
 
@@ -392,8 +359,6 @@ This protocol prevents the most common refinement mistake: changing multiple thi
 ## 4. Lab: Functional Prototype (90 min)
 
 *Lab details in the Lab Guide document.*
-
-**Lab summary:** Build and test a working prototype of a "Content Assistant" agent that generates post ideas or summaries based on user input. Document its purpose, workflow, and one improvement made during the refinement cycle.
 
 ---
 
