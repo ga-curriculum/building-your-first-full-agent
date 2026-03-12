@@ -1,0 +1,1222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Building Your First Full Agent — General Assembly BAA 14.0</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900&family=Barlow+Condensed:wght@600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --black:#0d0d0d;--black2:#1a1a1a;--black3:#252525;--black4:#333;
+  --line:#2e2e2e;--line2:#404040;--gray-dk:#555;--gray:#888;
+  --gray-lt:#bbb;--white:#fff;
+  --GA-red:#e8333a;--GA-red2:#ff4a50;
+  --yellow:#f5c518;--green:#22c55e;--blue:#3b82f6;--purple:#a855f7;
+  --teal:#14b8a6;--orange:#f97316;
+  --r:4px;--r-lg:10px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Barlow',sans-serif;background:var(--black);color:var(--white);font-size:16px;line-height:1.6;min-height:100vh}
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:var(--black2)}::-webkit-scrollbar-thumb{background:var(--black4);border-radius:3px}
+/* ── HEADER ── */
+header{position:sticky;top:0;z-index:500;background:var(--black);border-bottom:2px solid var(--GA-red);display:flex;align-items:stretch;height:58px}
+.ga-logo{display:flex;align-items:center;gap:10px;padding:0 20px;border-right:1px solid var(--line);flex-shrink:0;cursor:pointer}
+.ga-mark{width:32px;height:32px;background:var(--GA-red);display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:800;color:#fff;border-radius:2px}
+.ga-name{font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;letter-spacing:.06em;color:var(--gray-lt);text-transform:uppercase;line-height:1.2}
+.ga-name span{display:block;font-size:10px;color:var(--gray);font-weight:600}
+.tab-bar{display:flex;align-items:stretch;overflow-x:auto;flex:1;scrollbar-width:none}
+.tab-bar::-webkit-scrollbar{display:none}
+.tab{display:flex;align-items:center;padding:0 13px;font-family:'Barlow',sans-serif;font-size:12px;font-weight:600;color:var(--gray);cursor:pointer;white-space:nowrap;border-bottom:3px solid transparent;transition:color .15s,border-color .15s;position:relative;top:2px}
+.tab:hover{color:#fff}.tab.active{color:#fff;border-bottom-color:var(--GA-red)}
+.hd-end{display:flex;align-items:center;padding:0 18px;border-left:1px solid var(--line);flex-shrink:0}
+.prog-chip{background:var(--GA-red);color:#fff;font-family:'JetBrains Mono',monospace;font-size:11px;padding:4px 12px;border-radius:20px;white-space:nowrap}
+/* ── LAYOUT ── */
+.section{display:none}.section.active{display:block}
+.wrap{max-width:900px;margin:0 auto;padding:48px 24px 80px}
+.eyebrow{font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--GA-red);margin-bottom:10px;display:block}
+h1{font-family:'Barlow Condensed',sans-serif;font-size:clamp(2.4rem,6vw,3.8rem);font-weight:900;line-height:1.05;color:#fff;margin-bottom:16px}
+h1 .red{color:var(--GA-red)}
+h2{font-family:'Barlow Condensed',sans-serif;font-size:clamp(1.6rem,4vw,2.3rem);font-weight:800;line-height:1.1;color:#fff;margin-bottom:8px}
+h2 .red{color:var(--GA-red)}
+.lead{font-size:1.02rem;color:var(--gray-lt);line-height:1.72;margin-bottom:28px;max-width:680px}
+.hr{height:1px;background:var(--line);margin:36px 0}
+/* ── BUTTONS ── */
+.btn{display:inline-flex;align-items:center;gap:8px;padding:12px 28px;border-radius:var(--r);font-family:'Barlow',sans-serif;font-size:.95rem;font-weight:700;cursor:pointer;border:2px solid transparent;transition:all .15s;white-space:nowrap}
+.btn-red{background:var(--GA-red);color:#fff;border-color:var(--GA-red)}.btn-red:hover{background:var(--GA-red2);transform:translateY(-1px)}
+.btn-ghost{background:transparent;color:var(--gray-lt);border:2px solid var(--line2);padding:10px 20px;font-size:.88rem;font-weight:600;cursor:pointer;border-radius:var(--r);transition:all .15s}.btn-ghost:hover{border-color:var(--gray);color:#fff}
+.btn-green{background:var(--green);color:var(--black);border:none;border-radius:var(--r);padding:11px 24px;font-size:.9rem;font-weight:700;cursor:pointer;transition:all .15s}.btn-green:hover{background:#16a34a}
+.btn-sm{padding:7px 16px;font-size:.82rem;font-weight:600;border-radius:var(--r);cursor:pointer;border:1.5px solid var(--line2);background:var(--black3);color:var(--gray-lt);transition:all .15s}.btn-sm:hover{border-color:var(--gray);color:#fff}
+.btn-sm.active{background:var(--GA-red);border-color:var(--GA-red);color:#fff}
+/* ── CARDS / CALLOUTS ── */
+.card{background:var(--black2);border:1px solid var(--line);border-radius:var(--r-lg);padding:28px;margin-bottom:16px}
+.card-rb{border-top:3px solid var(--GA-red)}
+.callout{border-radius:var(--r-lg);padding:14px 18px;margin:12px 0;font-size:.88rem;line-height:1.65}
+.callout-tip{background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.2);color:#93c5fd}
+.callout-warn{background:rgba(245,197,24,.08);border:1px solid rgba(245,197,24,.2);color:#fde68a}
+.callout-success{background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.2);color:#86efac}
+.callout-purple{background:rgba(168,85,247,.08);border:1px solid rgba(168,85,247,.25);color:#d8b4fe}
+.callout-red{background:rgba(232,51,58,.07);border:1px solid rgba(232,51,58,.2);color:#fca5a5}
+.callout strong{color:#fff}
+/* ── ANIMATIONS ── */
+@keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+.a1{animation:fadeUp .35s ease both}.a2{animation:fadeUp .35s .1s ease both}.a3{animation:fadeUp .35s .2s ease both}
+.hero-kicker{display:inline-flex;align-items:center;gap:8px;background:var(--black3);border:1px solid var(--line);border-radius:var(--r);padding:6px 14px;margin-bottom:20px;font-size:12px;font-weight:600;color:var(--gray-lt);letter-spacing:.04em}
+.hero-kicker .dot{width:8px;height:8px;background:var(--GA-red);border-radius:50%;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+/* ── ROADMAP ── */
+.roadmap{display:flex;flex-direction:column}
+.rm-item{display:flex;align-items:flex-start;gap:16px;padding:14px 0;border-bottom:1px solid var(--line)}
+.rm-item:last-child{border-bottom:none}
+.rm-dot{width:36px;height:36px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;border:2px solid var(--line);background:var(--black3);color:var(--gray);transition:all .25s}
+.rm-dot.done{background:var(--green);border-color:var(--green);color:var(--black)}
+.rm-label{font-size:.95rem;font-weight:600;color:var(--gray);padding-top:6px}
+.rm-label.done{color:var(--green)}
+.rm-sub{font-size:.8rem;color:var(--gray-dk);margin-top:2px}
+
+/* ── DRAG SEQUENCER ── */
+.seq-list{display:flex;flex-direction:column;gap:8px;margin-bottom:16px}
+.seq-item{background:var(--black2);border:1.5px solid var(--line2);border-radius:var(--r-lg);padding:14px 16px;display:flex;align-items:center;gap:14px;cursor:grab;user-select:none;transition:all .15s}
+.seq-item:active{cursor:grabbing}
+.seq-item.dragging{opacity:.4;border-style:dashed}
+.seq-item.over{border-color:var(--GA-red);background:rgba(232,51,58,.06)}
+.seq-item.locked{cursor:default;pointer-events:none}
+.seq-handle{color:var(--gray-dk);font-size:.9rem;flex-shrink:0;line-height:1}
+.seq-num{font-family:'JetBrains Mono',monospace;font-size:.72rem;font-weight:700;background:var(--black3);border:1px solid var(--line);border-radius:4px;padding:2px 7px;color:var(--gray);flex-shrink:0}
+.seq-text{font-size:.9rem;color:var(--gray-lt);flex:1;line-height:1.45}
+.seq-icon{font-size:1.3rem;flex-shrink:0;width:32px;text-align:center}
+.seq-item.correct{border-color:var(--green);background:rgba(34,197,94,.06)}
+.seq-item.wrong{border-color:var(--GA-red);background:rgba(232,51,58,.06)}
+
+/* ── BUILD CHECKLIST ── */
+.platform-tabs{display:flex;gap:0;margin-bottom:0;border-bottom:2px solid var(--line)}
+.ptab{padding:10px 20px;font-size:.88rem;font-weight:700;color:var(--gray);cursor:pointer;border-bottom:3px solid transparent;position:relative;top:2px;transition:all .15s}
+.ptab:hover{color:#fff}.ptab.active{color:#fff;border-bottom-color:var(--GA-red)}
+.platform-panel{display:none;padding-top:20px}.platform-panel.active{display:block}
+.check-step{display:flex;align-items:flex-start;gap:16px;padding:16px;background:var(--black2);border:1.5px solid var(--line);border-radius:var(--r-lg);margin-bottom:10px;cursor:pointer;transition:all .2s}
+.check-step:hover:not(.done){border-color:var(--line2);background:var(--black3)}
+.check-step.done{border-color:var(--green);background:rgba(34,197,94,.05)}
+.check-box{width:22px;height:22px;border-radius:5px;border:2px solid var(--line2);flex-shrink:0;display:flex;align-items:center;justify-content:center;margin-top:2px;transition:all .2s;font-size:.7rem}
+.check-step.done .check-box{background:var(--green);border-color:var(--green);color:var(--black);font-weight:900}
+.check-title{font-size:.92rem;font-weight:700;color:var(--gray-lt);margin-bottom:3px;transition:color .2s}
+.check-step.done .check-title{color:#fff}
+.check-body{font-size:.83rem;color:var(--gray-dk);line-height:1.6}
+.code-block{background:#0a0a0a;border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden;margin:8px 0}
+.code-titlebar{background:var(--black3);padding:7px 14px;font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--gray);display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--line)}
+.code-titlebar .dot{width:9px;height:9px;border-radius:50%}
+.code-content{padding:14px 16px;font-family:'JetBrains Mono',monospace;font-size:.8rem;color:#a5f3fc;line-height:1.8;white-space:pre-wrap;overflow-x:auto}
+.code-content .kw{color:#f472b6}.code-content .str{color:#86efac}.code-content .cm{color:var(--gray-dk)}
+/* copy btn */
+.copy-btn{margin-left:auto;background:transparent;border:1px solid var(--line2);border-radius:3px;padding:2px 8px;font-size:.68rem;color:var(--gray);cursor:pointer;transition:all .15s}
+.copy-btn:hover{border-color:var(--gray);color:#fff}
+
+/* ── LIVE AGENT ── */
+.agent-shell{background:#080808;border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden}
+.agent-topbar{background:var(--black3);padding:10px 16px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--line)}
+.agent-status{width:9px;height:9px;border-radius:50%;background:var(--green);box-shadow:0 0 8px rgba(34,197,94,.5);animation:pulse 2s infinite}
+.agent-name-lbl{font-family:'JetBrains Mono',monospace;font-size:.82rem;color:var(--gray-lt);font-weight:700}
+.agent-version{font-size:.7rem;color:var(--gray-dk);margin-left:4px}
+.agent-mode-bar{display:flex;gap:6px;padding:10px 14px;background:var(--black2);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.mode-pill{padding:5px 12px;border-radius:20px;font-size:.76rem;font-weight:700;cursor:pointer;border:1.5px solid var(--line2);color:var(--gray);transition:all .15s;white-space:nowrap}
+.mode-pill:hover{color:#fff;border-color:var(--gray)}
+.mode-pill.active{background:var(--GA-red);border-color:var(--GA-red);color:#fff}
+.mode-pill.tried::after{content:'✓';margin-left:5px;font-size:.65rem}
+.agent-config{padding:14px 16px;display:flex;gap:10px;flex-wrap:wrap;background:var(--black2);border-bottom:1px solid var(--line)}
+.cfg-field{flex:1;min-width:180px}
+.cfg-label{font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gray-dk);margin-bottom:5px}
+.cfg-input{width:100%;background:var(--black3);border:1.5px solid var(--line2);border-radius:var(--r);padding:8px 12px;font-family:'Barlow',sans-serif;font-size:.88rem;color:#fff;outline:none;transition:border-color .15s}
+.cfg-input:focus{border-color:var(--GA-red)}
+.cfg-input::placeholder{color:var(--gray-dk)}
+.cfg-select{width:100%;background:var(--black3);border:1.5px solid var(--line2);border-radius:var(--r);padding:8px 12px;font-family:'Barlow',sans-serif;font-size:.88rem;color:#fff;outline:none;transition:border-color .15s;cursor:pointer}
+.cfg-select:focus{border-color:var(--GA-red)}
+.agent-output{min-height:240px;padding:16px;font-size:.91rem;color:var(--gray-lt);line-height:1.75;white-space:pre-wrap;position:relative}
+.agent-placeholder{color:var(--gray-dk);font-style:italic;font-size:.88rem;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;line-height:1.8;pointer-events:none}
+.agent-footer{border-top:1px solid var(--line);padding:12px 16px;display:flex;gap:10px;align-items:center;background:#080808;flex-wrap:wrap}
+.run-btn{background:var(--GA-red);border:none;border-radius:var(--r);padding:10px 22px;color:#fff;font-family:'Barlow',sans-serif;font-size:.88rem;font-weight:700;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:7px}
+.run-btn:hover:not(:disabled){background:var(--GA-red2);transform:translateY(-1px)}
+.run-btn:disabled{background:var(--black4);cursor:default}
+.hood-toggle{background:transparent;border:1.5px solid var(--line2);border-radius:var(--r);padding:9px 14px;color:var(--gray);font-family:'Barlow',sans-serif;font-size:.82rem;font-weight:600;cursor:pointer;transition:all .15s}
+.hood-toggle:hover{border-color:var(--gray);color:#fff}
+.hood-toggle.open{border-color:var(--teal);color:var(--teal)}
+.token-lbl{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--gray-dk);margin-left:auto}
+.hood-panel{display:none;border-top:1px solid var(--line);background:#040404}
+.hood-panel.open{display:block}
+.hood-tabs{display:flex;border-bottom:1px solid var(--line)}
+.htab{padding:8px 16px;font-family:'JetBrains Mono',monospace;font-size:.72rem;font-weight:700;color:var(--gray);cursor:pointer;letter-spacing:.06em;transition:color .15s;border-bottom:2px solid transparent;position:relative;top:1px}
+.htab:hover{color:#fff}.htab.active{color:var(--teal);border-bottom-color:var(--teal)}
+.hood-content{padding:14px 16px;font-family:'JetBrains Mono',monospace;font-size:.78rem;color:#a5f3fc;line-height:1.8;white-space:pre-wrap;overflow-x:auto;max-height:220px;overflow-y:auto}
+.hood-content .ht{color:#f472b6}.hood-content .hv{color:#86efac}.hood-content .hc{color:var(--gray-dk)}
+@keyframes spin{to{transform:rotate(360deg)}}
+.spinner{width:14px;height:14px;border:2px solid rgba(255,255,255,.2);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;flex-shrink:0}
+
+/* ── METRICS DASHBOARD ── */
+.metric-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-bottom:20px}
+.metric-card{background:var(--black2);border:1px solid var(--line);border-radius:var(--r-lg);padding:16px 18px}
+.metric-val{font-family:'Barlow Condensed',sans-serif;font-size:2.2rem;font-weight:900;line-height:1}
+.metric-lbl{font-size:.8rem;color:var(--gray-dk);margin-top:4px;line-height:1.4}
+.metric-bar{height:3px;border-radius:2px;margin-top:10px;background:var(--black4)}
+.metric-fill{height:100%;border-radius:2px;transition:width 1.2s ease}
+.metric-delta{font-size:.72rem;font-weight:700;margin-top:5px}
+
+/* ── MCQ ── */
+.mcq-opt{background:var(--black2);border:2px solid var(--line);border-radius:var(--r-lg);padding:12px 16px;cursor:pointer;display:flex;align-items:flex-start;gap:12px;font-size:.91rem;color:var(--gray-lt);transition:all .15s;text-align:left;width:100%;margin-bottom:8px}
+.mcq-opt:hover:not(.disabled){border-color:var(--GA-red);color:#fff}
+.mcq-opt.correct{border-color:var(--green);background:rgba(34,197,94,.07);color:#fff}
+.mcq-opt.wrong{border-color:var(--GA-red);background:rgba(232,51,58,.07)}
+.mcq-opt.disabled{cursor:default}
+.opt-k{width:26px;height:26px;border-radius:5px;flex-shrink:0;background:var(--black3);border:1.5px solid var(--line);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:.72rem;font-weight:700;color:var(--gray);margin-top:1px}
+.mcq-opt.correct .opt-k{background:var(--green);border-color:var(--green);color:var(--black)}
+.mcq-opt.wrong .opt-k{background:var(--GA-red);border-color:var(--GA-red);color:#fff}
+.mcq-fb{display:none;border-radius:var(--r-lg);padding:12px 16px;font-size:.87rem;line-height:1.62;margin-top:2px;margin-bottom:8px}
+.mcq-fb.show{display:block}.mcq-fb.ok{background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.25);color:#86efac}
+.mcq-fb.bad{background:rgba(232,51,58,.1);border:1px solid rgba(232,51,58,.25);color:#fca5a5}
+
+/* ── CANVAS ── */
+.c-section{background:var(--black2);border:1px solid var(--line);border-radius:var(--r-lg);padding:20px;margin-bottom:12px;position:relative;transition:border-color .2s}
+.c-section.filled{border-color:rgba(34,197,94,.35)}
+.c-section.filled::after{content:'✓';position:absolute;top:14px;right:16px;font-size:.85rem;font-weight:700;color:var(--green)}
+.c-label{font-family:'Barlow Condensed',sans-serif;font-size:1rem;font-weight:800;color:#fff;margin-bottom:3px}
+.c-hint{font-size:.8rem;color:var(--gray-dk);font-style:italic;margin-bottom:10px;line-height:1.5}
+.c-textarea{width:100%;background:var(--black3);border:1.5px solid var(--line2);border-radius:var(--r);padding:10px 14px;font-family:'Barlow',sans-serif;font-size:.88rem;color:var(--gray-lt);resize:vertical;min-height:80px;outline:none;line-height:1.65;transition:border-color .15s}
+.c-textarea:focus{border-color:var(--GA-red)}
+.c-textarea::placeholder{color:var(--gray-dk)}
+
+/* ── QUIZ ── */
+.qz-meta{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px}
+.qz-meta span{font-size:.85rem;color:var(--gray)}
+.prog-bar{height:4px;background:var(--black3);border-radius:2px;margin-bottom:28px;overflow:hidden}
+.prog-fill{height:100%;background:var(--GA-red);border-radius:2px;transition:width .4s}
+.quiz-q{font-family:'Barlow Condensed',sans-serif;font-size:1.4rem;font-weight:700;line-height:1.3;color:#fff;margin-bottom:20px}
+.q-opts{display:flex;flex-direction:column;gap:8px;margin-bottom:16px}
+.q-opt{background:var(--black2);border:2px solid var(--line);border-radius:var(--r-lg);padding:14px 18px;cursor:pointer;display:flex;align-items:flex-start;gap:14px;font-size:.95rem;color:var(--gray-lt);transition:all .16s;text-align:left;width:100%}
+.q-opt:hover:not(.disabled){border-color:var(--GA-red);color:#fff;background:rgba(232,51,58,.05)}
+.q-opt.correct{border-color:var(--green);background:rgba(34,197,94,.07);color:#fff}
+.q-opt.wrong{border-color:var(--GA-red);background:rgba(232,51,58,.08);color:#fff}
+.q-opt.disabled{cursor:default}
+.q-opt-k{width:30px;height:30px;border-radius:6px;flex-shrink:0;background:var(--black3);border:1.5px solid var(--line);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:.75rem;font-weight:700;color:var(--gray)}
+.q-opt.correct .q-opt-k{background:var(--green);border-color:var(--green);color:var(--black)}
+.q-opt.wrong .q-opt-k{background:var(--GA-red);border-color:var(--GA-red);color:#fff}
+.q-opt:hover:not(.disabled) .q-opt-k{border-color:var(--GA-red);color:var(--GA-red)}
+.fb-box{display:none;border-radius:var(--r-lg);padding:14px 18px;font-size:.92rem;line-height:1.6;margin-bottom:14px}
+.fb-box.show{display:flex;gap:10px;align-items:flex-start}
+.fb-box.ok{background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);color:#86efac}
+.fb-box.bad{background:rgba(232,51,58,.1);border:1px solid rgba(232,51,58,.3);color:#fca5a5}
+/* RESULTS */
+.score-row{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}
+.score-row:last-child{border-bottom:none}
+.score-bar-wrap{width:80px;height:3px;background:var(--black3);border-radius:2px;flex-shrink:0}
+.score-bar-fill{height:100%;border-radius:2px}
+.tk-item{display:flex;gap:12px;padding:14px 0;border-bottom:1px solid var(--line)}
+.tk-item:last-child{border-bottom:none}
+.tk-num{font-family:'Barlow Condensed',sans-serif;font-size:1.6rem;font-weight:900;color:var(--GA-red);flex-shrink:0;line-height:1;padding-top:2px}
+
+/* ── WORKFLOW DIAGRAM ── */
+.wf-diagram{display:flex;flex-direction:column;gap:0;position:relative}
+.wf-step{display:flex;align-items:stretch;gap:14px;position:relative;z-index:1}
+.wf-spine{display:flex;flex-direction:column;align-items:center;flex-shrink:0;width:40px}
+.wf-node{width:40px;height:40px;border-radius:50%;border:2px solid var(--line2);background:var(--black3);display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;position:relative;z-index:2}
+.wf-line{width:2px;background:var(--line);flex:1;margin:0 auto}
+.wf-content{flex:1;padding:0 0 20px}
+.wf-title{font-weight:700;color:#fff;font-size:.92rem;margin-bottom:3px}
+.wf-desc{font-size:.82rem;color:var(--gray-dk);line-height:1.55}
+.wf-step:last-child .wf-line{display:none}
+
+/* workflow active states */
+.wf-node.live{background:rgba(232,51,58,.15);border-color:var(--GA-red);box-shadow:0 0 12px rgba(232,51,58,.3)}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="ga-logo" onclick="nav('intro')">
+    <div class="ga-mark">GA</div>
+    <div class="ga-name">General Assembly<span>Build AI Agents · BAA 14.0</span></div>
+  </div>
+  <div class="tab-bar">
+    <div class="tab active" id="t-intro"   onclick="nav('intro')">⬡ Overview</div>
+    <div class="tab"        id="t-brief"   onclick="nav('brief')">📋 Brief</div>
+    <div class="tab"        id="t-plan"    onclick="nav('plan')">🗺 Plan</div>
+    <div class="tab"        id="t-build"   onclick="nav('build')">🔨 Build</div>
+    <div class="tab"        id="t-test"    onclick="nav('test')">▶ Test Live</div>
+    <div class="tab"        id="t-refine"  onclick="nav('refine')">📊 Refine</div>
+    <div class="tab"        id="t-document" onclick="nav('document')">📄 Document</div>
+    <div class="tab"        id="t-quiz"    onclick="nav('quiz')">◇ Check</div>
+    <div class="tab"        id="t-results" onclick="nav('results')">★ Results</div>
+  </div>
+  <div class="hd-end"><div class="prog-chip" id="progressChip">0 / 5</div></div>
+</header>
+
+<!-- ══════════ INTRO ══════════ -->
+<div class="section active" id="s-intro">
+<div class="wrap">
+  <div class="a1" style="padding-bottom:40px;border-bottom:1px solid var(--line);margin-bottom:36px">
+    <div class="hero-kicker"><div class="dot"></div>Capstone Lab · Module 14 · BAA 14.0</div>
+    <h1>Building Your<br/><span class="red">First Full Agent</span></h1>
+    <p class="lead">This is the capstone. You've studied anatomy, frameworks, memory, security, and dialogue. Now you build — a real, working Content Assistant agent that you plan, construct, test against live inputs, measure, and document. By the end you'll have a prototype and the process to iterate it into production.</p>
+    <button class="btn btn-red" onclick="nav('brief')">Start Building →</button>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px;margin-bottom:36px" class="a2">
+    <div class="card" style="padding:18px 20px;display:flex;gap:14px;margin-bottom:0">
+      <div style="font-size:1.8rem;flex-shrink:0">🗺</div>
+      <div><strong style="color:#fff;display:block;margin-bottom:4px">Plan End-to-End</strong><div style="font-size:.86rem;color:var(--gray-lt);line-height:1.5">Sequence every stage of agent workflow from input handling to output delivery.</div></div>
+    </div>
+    <div class="card" style="padding:18px 20px;display:flex;gap:14px;margin-bottom:0">
+      <div style="font-size:1.8rem;flex-shrink:0">🔨</div>
+      <div><strong style="color:#fff;display:block;margin-bottom:4px">Build in No-Code</strong><div style="font-size:.86rem;color:var(--gray-lt);line-height:1.5">Follow a guided build in GPT Builder or Flowise — with a production-ready system prompt template.</div></div>
+    </div>
+    <div class="card" style="padding:18px 20px;display:flex;gap:14px;margin-bottom:0">
+      <div style="font-size:1.8rem;flex-shrink:0">▶</div>
+      <div><strong style="color:#fff;display:block;margin-bottom:4px">Test Live — Right Here</strong><div style="font-size:.86rem;color:var(--gray-lt);line-height:1.5">Run the actual Content Assistant AI built into this lab. Try all 5 output modes with real inputs.</div></div>
+    </div>
+    <div class="card" style="padding:18px 20px;display:flex;gap:14px;margin-bottom:0">
+      <div style="font-size:1.8rem;flex-shrink:0">📊</div>
+      <div><strong style="color:#fff;display:block;margin-bottom:4px">Measure & Refine</strong><div style="font-size:.86rem;color:var(--gray-lt);line-height:1.5">Analyze real performance metrics. Identify the highest-impact improvement from the data.</div></div>
+    </div>
+    <div class="card" style="padding:18px 20px;display:flex;gap:14px;margin-bottom:0">
+      <div style="font-size:1.8rem;flex-shrink:0">📄</div>
+      <div><strong style="color:#fff;display:block;margin-bottom:4px">Document Your Agent</strong><div style="font-size:.86rem;color:var(--gray-lt);line-height:1.5">Write the spec document that defines purpose, workflow, constraints, and next-iteration plan.</div></div>
+    </div>
+  </div>
+  <div class="hr"></div>
+  <span class="eyebrow">Lab Roadmap</span>
+  <div class="card a3"><div class="roadmap">
+    <div class="rm-item"><div class="rm-dot" id="dot-brief">—</div><div><div class="rm-label" id="lbl-brief">Brief — Define your Content Assistant agent</div><div class="rm-sub">Purpose, scope, user personas, and success criteria</div></div></div>
+    <div class="rm-item"><div class="rm-dot" id="dot-plan">1</div><div><div class="rm-label" id="lbl-plan">Plan the Workflow</div><div class="rm-sub">Sequence 8 stages of the agent pipeline in the correct order</div></div></div>
+    <div class="rm-item"><div class="rm-dot" id="dot-build">2</div><div><div class="rm-label" id="lbl-build">Build in a No-Code Platform</div><div class="rm-sub">Complete the step-by-step build checklist for GPT Builder or Flowise</div></div></div>
+    <div class="rm-item"><div class="rm-dot" id="dot-test">3</div><div><div class="rm-label" id="lbl-test">Test With Live Inputs</div><div class="rm-sub">Run the embedded Content Assistant AI — test all 5 output modes</div></div></div>
+    <div class="rm-item"><div class="rm-dot" id="dot-refine">4</div><div><div class="rm-label" id="lbl-refine">Measure & Refine</div><div class="rm-sub">Analyze beta test metrics and identify the top improvement</div></div></div>
+    <div class="rm-item"><div class="rm-dot" id="dot-document">5</div><div><div class="rm-label" id="lbl-document">Document Your Agent</div><div class="rm-sub">Complete the full agent specification canvas</div></div></div>
+    <div class="rm-item"><div class="rm-dot" id="dot-quiz">—</div><div><div class="rm-label">Knowledge Check · 7 questions · 70% to pass</div></div></div>
+  </div></div>
+</div>
+</div>
+
+<!-- ══════════ BRIEF ══════════ -->
+<div class="section" id="s-brief">
+<div class="wrap">
+  <span class="eyebrow">The Mission Brief</span>
+  <h2>Meet <span class="red">ContentPilot</span></h2>
+  <p class="lead">You're building ContentPilot — a Content Assistant agent that helps creators, marketers, and entrepreneurs generate post ideas, write summaries, draft LinkedIn posts, build Twitter/X threads, and craft content hooks. It receives a topic and audience, thinks about platform and tone, and produces structured, actionable output.</p>
+
+  <div class="card" style="border-left:4px solid var(--GA-red);margin-bottom:14px">
+    <div style="font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--GA-red);margin-bottom:12px">Agent Specification Brief</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+      <div>
+        <div style="font-size:.75rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gray-dk);margin-bottom:8px">What It Does</div>
+        <div style="display:flex;flex-direction:column;gap:6px;font-size:.87rem;color:var(--gray-lt);line-height:1.55">
+          <div>🖊 Generates 5–7 specific post ideas on any topic</div>
+          <div>📝 Writes TL;DR summaries from long text</div>
+          <div>💼 Drafts LinkedIn posts in a professional voice</div>
+          <div>🧵 Builds structured Twitter/X threads</div>
+          <div>🪝 Crafts attention-grabbing content hooks</div>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:.75rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gray-dk);margin-bottom:8px">Success Criteria</div>
+        <div style="display:flex;flex-direction:column;gap:6px;font-size:.87rem;color:var(--gray-lt);line-height:1.55">
+          <div>✅ Output is immediately usable — no editing required</div>
+          <div>✅ Tone matches the stated platform</div>
+          <div>✅ Ideas are specific, not generic (no "Write about AI")</div>
+          <div>✅ Format is scannable and structured</div>
+          <div>✅ Responds in under 8 seconds</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
+    <div style="background:var(--black2);border:1px solid var(--line);border-radius:var(--r-lg);padding:18px">
+      <div style="font-size:.75rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--blue);margin-bottom:10px">👤 Primary User Personas</div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div style="font-size:.84rem;color:var(--gray-lt)"><strong style="color:#fff;display:block">Creator/Solopreneur</strong>Posting 3–5x/week, needs ideas fast. Values specific, non-generic outputs they can publish immediately.</div>
+        <div style="font-size:.84rem;color:var(--gray-lt)"><strong style="color:#fff;display:block">Marketing Manager</strong>Repurposing long-form content into social. Values format consistency and platform-appropriate tone.</div>
+        <div style="font-size:.84rem;color:var(--gray-lt)"><strong style="color:#fff;display:block">Entrepreneur</strong>Building thought leadership. Values outputs that sound like them, not a generic AI chatbot.</div>
+      </div>
+    </div>
+    <div style="background:var(--black2);border:1px solid var(--line);border-radius:var(--r-lg);padding:18px">
+      <div style="font-size:.75rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--GA-red);margin-bottom:10px">⚠️ Design Constraints</div>
+      <div style="display:flex;flex-direction:column;gap:8px;font-size:.84rem;color:var(--gray-lt);line-height:1.5">
+        <div><strong style="color:#fff">Tone:</strong> Adaptable to creator's voice. Default = professional but human, not corporate.</div>
+        <div><strong style="color:#fff">Length:</strong> Post ideas ≤ 30 words each. LinkedIn ≤ 250 words. Hooks ≤ 25 words.</div>
+        <div><strong style="color:#fff">No fluff:</strong> Never output phrases like "Great question!" or "In today's digital landscape..."</div>
+        <div><strong style="color:#fff">No hallucination:</strong> If given a summary task with no input text, ask for the text before proceeding.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout callout-tip">
+    <strong>💡 The agent design philosophy:</strong> ContentPilot is a <em>thinking partner</em>, not a ghostwriter. Its job is to give the creator raw material they can react to, edit, and personalize — not produce polished copy they post unchanged. Outputs should be 80% of the way there, not 100%.
+  </div>
+
+  <div style="margin-top:24px">
+    <button class="btn btn-red" onclick="markDone('brief');nav('plan')">Plan the Workflow →</button>
+  </div>
+</div>
+</div>
+
+<!-- ══════════ PLAN ══════════ -->
+<div class="section" id="s-plan">
+<div class="wrap">
+  <span class="eyebrow">Section 01 · Workflow Design</span>
+  <h2>Plan the <span class="red">Agent Pipeline</span></h2>
+  <p class="lead">Every agent runs on a pipeline — a sequence of stages from receiving user input to delivering output. The order matters: if you try to call the LLM before validating input, bad data poisons the response. Arrange the 8 stages below in the correct execution order.</p>
+
+  <div class="callout callout-warn" style="margin-bottom:20px">
+    <strong>⚡ Drag to reorder</strong> the pipeline stages into the correct sequence, then click <strong>Verify Order</strong> to check.
+  </div>
+
+  <div class="seq-list" id="seqList"></div>
+  <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:4px">
+    <button class="btn btn-red" id="seqVerifyBtn" onclick="verifySeq()">Verify Order →</button>
+    <button class="btn btn-ghost" id="seqResetBtn" onclick="resetSeq()">Reset</button>
+  </div>
+  <div id="seqFB" style="display:none;margin-top:16px"></div>
+  <div id="planNext" style="display:none;margin-top:20px">
+    <div class="hr" style="margin:20px 0"/>
+    <span class="eyebrow">Correct Pipeline</span>
+    <div class="wf-diagram" id="wfDiagram"></div>
+    <div style="margin-top:20px"><button class="btn btn-red" onclick="nav('build')">Next: Build in a Platform →</button></div>
+  </div>
+</div>
+</div>
+
+<!-- ══════════ BUILD ══════════ -->
+<div class="section" id="s-build">
+<div class="wrap">
+  <span class="eyebrow">Section 02 · Platform Build</span>
+  <h2>Build <span class="red">ContentPilot</span></h2>
+  <p class="lead">Follow the guided checklist for your platform of choice. Complete each step — the most important artifact you'll create is the <strong style="color:#fff">System Prompt</strong>. Everything else configures the environment; the system prompt <em>is</em> the agent's brain.</p>
+
+  <div class="platform-tabs">
+    <div class="ptab active" id="ptab-gpt" onclick="switchPlatform('gpt')">🤖 GPT Builder</div>
+    <div class="ptab" id="ptab-flowise" onclick="switchPlatform('flowise')">🌊 Flowise</div>
+    <div class="ptab" id="ptab-relevance" onclick="switchPlatform('relevance')">⚡ Relevance AI</div>
+  </div>
+
+  <div class="platform-panel active" id="pp-gpt">
+    <div class="callout callout-tip" style="margin-bottom:16px"><strong>🤖 GPT Builder</strong> — the fastest no-code path. You'll be live in under 10 minutes. Go to <strong>chat.openai.com → Explore GPTs → Create</strong>.</div>
+    <div id="gpt-checks"></div>
+  </div>
+  <div class="platform-panel" id="pp-flowise">
+    <div class="callout callout-tip" style="margin-bottom:16px"><strong>🌊 Flowise</strong> — open-source, self-hosted or cloud. Ideal if you need more control over tool integrations. Start at <strong>flowise.ai → New Chatflow</strong>.</div>
+    <div id="flowise-checks"></div>
+  </div>
+  <div class="platform-panel" id="pp-relevance">
+    <div class="callout callout-tip" style="margin-bottom:16px"><strong>⚡ Relevance AI</strong> — visual agent builder with tool steps. Go to <strong>app.relevanceai.com → Agents → New Agent</strong>.</div>
+    <div id="relevance-checks"></div>
+  </div>
+
+  <div id="buildProgress" style="margin-top:16px;font-size:.85rem;color:var(--gray-dk);font-family:'JetBrains Mono',monospace"></div>
+  <div id="buildNext" style="display:none;margin-top:16px">
+    <div class="callout callout-success"><strong>✓ Build complete!</strong> Your ContentPilot prototype is configured. Now test it with real inputs.</div>
+    <div style="margin-top:14px"><button class="btn btn-red" onclick="markDone('build');nav('test')">Test the Live Agent →</button></div>
+  </div>
+</div>
+</div>
+
+<!-- ══════════ TEST ══════════ -->
+<div class="section" id="s-test">
+<div class="wrap">
+  <span class="eyebrow">Section 03 · Live Testing</span>
+  <h2><span class="red">ContentPilot</span> — Live</h2>
+  <p class="lead">Below is a fully functional version of ContentPilot, powered by Claude. This is what you just built. Test it like a real user would — try all 5 output modes with different topics and audiences. Your testing unlocks the performance data in the next section.</p>
+
+  <div class="callout callout-purple" style="margin-bottom:16px">
+    <strong>🧪 Testing goal:</strong> Try at least <strong>3 different modes</strong> with real inputs. Notice what works, what's too generic, and what you'd want to improve. These observations feed directly into the Refine section.
+  </div>
+
+  <div class="agent-shell">
+    <div class="agent-topbar">
+      <div class="agent-status"></div>
+      <span class="agent-name-lbl">ContentPilot</span><span class="agent-version">v1.0-prototype</span>
+      <span style="font-size:.72rem;color:var(--gray-dk);margin-left:10px;font-family:'JetBrains Mono',monospace">powered by Claude</span>
+      <span style="margin-left:auto;font-size:.72rem;font-weight:700;color:var(--gray-dk);font-family:'JetBrains Mono',monospace">MODES TRIED: <span id="modeCount" style="color:var(--green)">0/5</span></span>
+    </div>
+
+    <div class="agent-mode-bar">
+      <div class="mode-pill active" id="mode-ideas"   onclick="setMode('ideas'  )">💡 Post Ideas</div>
+      <div class="mode-pill"        id="mode-summary"  onclick="setMode('summary')">📝 Summary</div>
+      <div class="mode-pill"        id="mode-linkedin" onclick="setMode('linkedin')">💼 LinkedIn Post</div>
+      <div class="mode-pill"        id="mode-thread"   onclick="setMode('thread' )">🧵 X Thread</div>
+      <div class="mode-pill"        id="mode-hook"     onclick="setMode('hook'   )">🪝 Content Hook</div>
+    </div>
+
+    <div class="agent-config">
+      <div class="cfg-field" style="min-width:240px">
+        <div class="cfg-label" id="topicLabel">Topic / Niche</div>
+        <input class="cfg-input" id="topicInput" placeholder="e.g. productivity for remote teams"/>
+      </div>
+      <div class="cfg-field" id="audienceField">
+        <div class="cfg-label">Target Audience</div>
+        <input class="cfg-input" id="audienceInput" placeholder="e.g. startup founders"/>
+      </div>
+      <div class="cfg-field" id="toneField" style="max-width:160px">
+        <div class="cfg-label">Tone</div>
+        <select class="cfg-select" id="toneInput">
+          <option value="professional">Professional</option>
+          <option value="casual">Casual</option>
+          <option value="educational">Educational</option>
+          <option value="provocative">Provocative</option>
+          <option value="storytelling">Storytelling</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="agent-output" id="agentOutput">
+      <div class="agent-placeholder" id="agentPlaceholder">Select a mode above, enter your topic,<br/>and click <strong style="color:#fff">Generate</strong> to run ContentPilot</div>
+    </div>
+
+    <div class="agent-footer">
+      <button class="run-btn" id="runBtn" onclick="runAgent()">
+        <span id="runBtnTxt">⚡ Generate</span>
+      </button>
+      <button class="hood-toggle" id="hoodToggle" onclick="toggleHood()">⚙ Under the Hood</button>
+      <span class="token-lbl" id="tokenLbl"></span>
+    </div>
+    <div class="hood-panel" id="hoodPanel">
+      <div class="hood-tabs">
+        <div class="htab active" id="ht-prompt" onclick="switchHood('prompt')">SYSTEM PROMPT</div>
+        <div class="htab" id="ht-request" onclick="switchHood('request')">REQUEST JSON</div>
+        <div class="htab" id="ht-metrics" onclick="switchHood('metrics')">LIVE METRICS</div>
+      </div>
+      <div class="hood-content" id="hoodContent">
+        <span style="color:var(--gray-dk)">// Run the agent to see live data</span>
+      </div>
+    </div>
+  </div>
+
+  <div id="testObs" style="margin-top:16px;display:none"></div>
+  <div style="margin-top:14px" id="testNextRow" style="display:none">
+    <button class="btn btn-ghost" id="testNextBtn" style="display:none" onclick="markDone('test');nav('refine')">View Performance Data →</button>
+  </div>
+</div>
+</div>
+
+<!-- ══════════ REFINE ══════════ -->
+<div class="section" id="s-refine">
+<div class="wrap">
+  <span class="eyebrow">Section 04 · Measurement & Iteration</span>
+  <h2>Measure, <span class="red">Then Refine</span></h2>
+  <p class="lead">You've built and tested. Now look at the data. Below are performance metrics from the ContentPilot beta — 247 test runs across all 5 modes. One metric stands out as the highest-impact improvement opportunity. Your job: find it, diagnose it, and prescribe the fix.</p>
+
+  <div id="metricsGrid" class="metric-grid"></div>
+
+  <div class="callout callout-warn" style="margin-bottom:20px">
+    <strong>📊 Not all metrics are equally important.</strong> A metric at 95% and a metric at 55% are not equally fixable — and they're not equally costly. Think about which failure mode most directly breaks ContentPilot's core value proposition.
+  </div>
+
+  <div class="card card-rb" style="margin-bottom:16px">
+    <div style="font-size:.82rem;font-weight:700;color:var(--gray-dk);margin-bottom:14px">DIAGNOSIS QUESTION</div>
+    <div class="quiz-q" style="font-size:1.2rem;margin-bottom:16px">Which metric represents the single highest-priority improvement for ContentPilot v1.1?</div>
+    <div id="refineOpts"></div>
+    <div class="mcq-fb" id="refineFB"></div>
+  </div>
+
+  <div id="refineDetail" style="display:none">
+    <div class="hr" style="margin:20px 0"/>
+    <span class="eyebrow">Improvement Plan</span>
+    <div class="card">
+      <div style="font-size:.78rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--GA-red);margin-bottom:12px">Root Cause Analysis — Idea Specificity (54%)</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;font-size:.86rem;color:var(--gray-lt);line-height:1.65">
+        <div>
+          <div style="color:var(--GA-red);font-weight:700;margin-bottom:6px">❌ What users receive (54% of the time)</div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:.78rem;background:#0a0a0a;border:1px solid var(--line);border-radius:var(--r-lg);padding:12px;color:var(--gray-lt);line-height:1.8">1. Why AI is changing work<br/>2. The future of productivity<br/>3. Remote work best practices<br/>4. How to use AI tools<br/>5. Building better habits</div>
+          <div style="margin-top:8px;font-size:.8rem;color:var(--gray-dk)">Could describe 10,000 articles. Not usable without substantial rewriting.</div>
+        </div>
+        <div>
+          <div style="color:var(--green);font-weight:700;margin-bottom:6px">✓ What users need (target state)</div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:.78rem;background:#0a0a0a;border:1px solid var(--line);border-radius:var(--r-lg);padding:12px;color:var(--gray-lt);line-height:1.8">1. I replaced my daily standup with a<br/>   Slack async message — here's why<br/>2. The 3 AI tools that cut my meeting<br/>   time by 6 hours/week<br/>3. What happens when you tell your<br/>   team to batch all questions</div>
+          <div style="margin-top:8px;font-size:.8rem;color:var(--gray-dk)">Specific enough to write from. Personal angle already embedded.</div>
+        </div>
+      </div>
+      <div style="margin-top:16px;padding:14px;background:var(--black3);border-radius:var(--r-lg)">
+        <div style="font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--green);margin-bottom:8px">The Fix: System Prompt Addition</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:.8rem;color:#a5f3fc;line-height:1.8;white-space:pre-wrap">RULE: Each post idea must include:
+- A specific angle (not just a topic)
+- One concrete hook word (number, "how", "why", personal story signal)
+- A rough narrative form (story, list, opinion, how-to)
+
+BAD: "The future of remote work"
+GOOD: "3 async habits that let me skip 90% of my meetings (and my team prefers it)"</div>
+      </div>
+    </div>
+    <div style="margin-top:16px"><button class="btn btn-red" onclick="markDone('refine');nav('document')">Document Your Agent →</button></div>
+  </div>
+</div>
+</div>
+
+<!-- ══════════ DOCUMENT ══════════ -->
+<div class="section" id="s-document">
+<div class="wrap">
+  <span class="eyebrow">Section 05 · Agent Documentation</span>
+  <h2>The Agent <span class="red">Spec Document</span></h2>
+  <p class="lead">A prototype without documentation is a dead end. The spec document is what makes ContentPilot reproducible, improvable, and handoffable. Fill out all 6 sections — this is the artifact you'd give an engineering team to implement and a QA team to test against.</p>
+
+  <div class="callout callout-tip" style="margin-bottom:20px">
+    <strong>💡 Good specs are falsifiable.</strong> Every claim in your spec should be testable: "The agent produces 5–7 post ideas, each 10–30 words, with a specific angle and a hook element" is a spec. "The agent produces helpful content" is not.
+  </div>
+
+  <div id="docCanvas"></div>
+
+  <div id="docResult" style="display:none;margin-top:14px"></div>
+  <div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap">
+    <button class="btn btn-red" id="docSubmitBtn" onclick="submitDoc()">Submit Documentation</button>
+    <button class="btn btn-ghost" id="docNextBtn" style="display:none" onclick="markDone('document');nav('quiz')">Proceed to Knowledge Check →</button>
+  </div>
+</div>
+</div>
+
+<!-- ══════════ QUIZ ══════════ -->
+<div class="section" id="s-quiz">
+<div class="wrap">
+  <span class="eyebrow">Capstone Knowledge Check</span>
+  <h2>7 <span class="red">Questions</span></h2>
+  <p class="lead">Covering agent design, workflow planning, system prompts, evaluation, and iteration. 70% to pass.</p>
+  <div id="quizActive">
+    <div class="qz-meta"><span id="qMeta">Question 1 of 7</span><span id="qScoreTxt">Score: 0 / 0</span></div>
+    <div class="prog-bar"><div class="prog-fill" id="qProg" style="width:0%"></div></div>
+    <div class="card card-rb">
+      <div class="quiz-q" id="quizQ"></div>
+      <div class="q-opts" id="quizOpts"></div>
+      <div class="fb-box" id="quizFB"></div>
+      <button class="btn btn-red" id="qNextBtn" style="display:none" onclick="nextQ()">Continue →</button>
+    </div>
+  </div>
+  <div id="quizDone" style="display:none">
+    <div class="card card-rb">
+      <h3 style="font-size:1.2rem;margin-bottom:8px">Quiz Complete <span id="qBadge"></span></h3>
+      <p id="qMsg" style="font-size:.95rem;color:var(--gray-lt);margin-bottom:20px;line-height:1.7"></p>
+      <button class="btn-green" onclick="markDone('quiz');buildResults();nav('results')">See Final Results →</button>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ══════════ RESULTS ══════════ -->
+<div class="section" id="s-results">
+<div class="wrap">
+  <span class="eyebrow">Capstone Complete</span>
+  <h2>BAA Course <span class="red">Finished</span></h2>
+  <div id="resultsBody"></div>
+</div>
+</div>
+
+<!-- ══════════════════ JS ══════════════════ -->
+<script>
+const ALL_SECS=['intro','brief','plan','build','test','refine','document','quiz','results'];
+let completed=new Set(), sectionScores={};
+
+function nav(id){
+  ALL_SECS.forEach(s=>{
+    document.getElementById('s-'+s).classList.remove('active');
+    const t=document.getElementById('t-'+s); if(t)t.classList.remove('active');
+  });
+  document.getElementById('s-'+id).classList.add('active');
+  const t=document.getElementById('t-'+id); if(t)t.classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+  if(id==='plan'&&!planBuilt) buildPlan();
+  if(id==='build'&&!buildBuilt) buildBuildChecklist();
+  if(id==='test'&&!testBuilt) buildTest();
+  if(id==='refine'&&!refineBuilt) buildRefine();
+  if(id==='document'&&!docBuilt) buildDoc();
+  if(id==='quiz'&&!qStarted) initQuiz();
+}
+function markDone(key){
+  completed.add(key);
+  document.getElementById('progressChip').textContent=completed.size+' / 5';
+  const d=document.getElementById('dot-'+key),l=document.getElementById('lbl-'+key);
+  if(d){d.className='rm-dot done';d.textContent='✓';}
+  if(l)l.className='rm-label done';
+}
+
+// ─── PLAN (SEQUENCER) ────────────────────────────────────────────────────────
+let planBuilt=false, seqVerified=false;
+
+const PIPELINE=[
+  {icon:'📥',text:'Receive & validate user input',detail:'Parse topic, audience, mode. Reject empty or nonsensical inputs with a helpful prompt.',correct:0},
+  {icon:'🗃',text:'Retrieve memory & prior context',detail:'Load any saved brand voice, previous topics, or user preferences from memory store.',correct:1},
+  {icon:'🧱',text:'Construct the structured prompt',detail:'Assemble system prompt + user message with all context. Apply mode-specific templates.',correct:2},
+  {icon:'🤖',text:'Call the LLM (with tools if needed)',detail:'Send the constructed prompt to the model. Tools may include web search or content retrieval.',correct:3},
+  {icon:'🔍',text:'Validate & filter the output',detail:'Check output against spec: length, specificity, tone. Flag if output is too generic.',correct:4},
+  {icon:'📐',text:'Format for the target platform',detail:'Apply platform-specific formatting: bullet points, character limits, emojis, hashtags.',correct:5},
+  {icon:'📤',text:'Deliver output to the user',detail:'Return formatted content to user interface. Stream if possible to reduce perceived latency.',correct:6},
+  {icon:'💾',text:'Log interaction & update memory',detail:'Store output quality signal, topic, mode. Update user preference profile for next session.',correct:7},
+];
+
+// shuffle for display
+let seqOrder=[];
+function buildPlan(){
+  planBuilt=true;
+  seqOrder=[...PIPELINE].map((_,i)=>i);
+  // Fisher-Yates shuffle
+  for(let i=seqOrder.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[seqOrder[i],seqOrder[j]]=[seqOrder[j],seqOrder[i]];}
+  renderSeq();
+}
+function renderSeq(){
+  const el=document.getElementById('seqList'); el.innerHTML='';
+  seqOrder.forEach((idx,pos)=>{
+    const item=PIPELINE[idx];
+    const div=document.createElement('div'); div.className='seq-item'; div.dataset.idx=idx; div.draggable=true;
+    div.innerHTML=`<span class="seq-handle">⠿</span><span class="seq-num">${String(pos+1).padStart(2,'0')}</span><span class="seq-icon">${item.icon}</span><span class="seq-text">${item.text}</span>`;
+    addDrag(div);
+    el.appendChild(div);
+  });
+}
+let dragSrc=null;
+function addDrag(el){
+  el.addEventListener('dragstart',e=>{dragSrc=el;el.classList.add('dragging');e.dataTransfer.effectAllowed='move';});
+  el.addEventListener('dragend',()=>{el.classList.remove('dragging');document.querySelectorAll('.seq-item').forEach(x=>x.classList.remove('over'));});
+  el.addEventListener('dragover',e=>{e.preventDefault();el.classList.add('over');});
+  el.addEventListener('dragleave',()=>el.classList.remove('over'));
+  el.addEventListener('drop',e=>{
+    e.preventDefault(); el.classList.remove('over');
+    if(dragSrc===el)return;
+    const list=document.getElementById('seqList');
+    const items=[...list.querySelectorAll('.seq-item')];
+    const from=items.indexOf(dragSrc), to=items.indexOf(el);
+    [seqOrder[from],seqOrder[to]]=[seqOrder[to],seqOrder[from]];
+    renderSeq();
+  });
+  // mobile tap-swap
+  el.addEventListener('touchstart',e=>{el._ts=Date.now();el._ty=e.touches[0].clientY;},{passive:true});
+  el.addEventListener('touchend',e=>{
+    if(Date.now()-el._ts>500){
+      if(dragSrc&&dragSrc!==el){
+        const list=document.getElementById('seqList');
+        const items=[...list.querySelectorAll('.seq-item')];
+        const from=items.indexOf(dragSrc),to=items.indexOf(el);
+        [seqOrder[from],seqOrder[to]]=[seqOrder[to],seqOrder[from]];
+        dragSrc=null; renderSeq();
+      } else { dragSrc=el; el.style.outline='2px solid var(--GA-red)'; }
+    }
+  },{passive:true});
+}
+function verifySeq(){
+  if(seqVerified)return;
+  let correct=0;
+  seqOrder.forEach((idx,pos)=>{ if(PIPELINE[idx].correct===pos)correct++; });
+  const pct=Math.round(correct/PIPELINE.length*100);
+  sectionScores.plan={earned:correct,possible:PIPELINE.length};
+  const fb=document.getElementById('seqFB'); fb.style.display='block';
+  const allRight=correct===PIPELINE.length;
+  fb.innerHTML=`<div class="callout ${allRight?'callout-success':pct>=50?'callout-warn':'callout-red'}">
+    <strong>${allRight?'✅ Perfect order!':correct>=6?'✓ Almost! '+correct+'/8 correct':correct+'/8 correct — check the highlighted steps.'}</strong>
+    ${allRight?'You\'ve sequenced the full agent pipeline correctly. Every stage enables the next.':'Tip: Validation must come before LLM call. Memory retrieval before prompt construction. Logging always last.'}
+  </div>`;
+  // colour items
+  [...document.getElementById('seqList').querySelectorAll('.seq-item')].forEach((div,pos)=>{
+    const idx=seqOrder[pos];
+    div.classList.add(PIPELINE[idx].correct===pos?'correct':'wrong');
+    div.classList.add('locked');
+  });
+  seqVerified=true;
+  if(allRight||correct>=6){
+    markDone('plan');
+    showWFDiagram();
+    document.getElementById('planNext').style.display='block';
+  } else {
+    fb.innerHTML+=`<div style="margin-top:10px"><button class="btn btn-ghost" onclick="resetSeq()">Try Again</button></div>`;
+  }
+}
+function resetSeq(){
+  seqVerified=false;
+  document.getElementById('seqFB').style.display='none';
+  document.getElementById('planNext').style.display='none';
+  buildPlan();
+}
+function showWFDiagram(){
+  const el=document.getElementById('wfDiagram'); el.innerHTML='';
+  const colors=['var(--GA-red)','var(--orange)','var(--yellow)','var(--green)','var(--teal)','var(--blue)','var(--purple)','var(--gray)'];
+  PIPELINE.forEach((p,i)=>{
+    el.insertAdjacentHTML('beforeend',`<div class="wf-step">
+      <div class="wf-spine"><div class="wf-node" style="border-color:${colors[i]};color:${colors[i]}">${p.icon}</div><div class="wf-line"></div></div>
+      <div class="wf-content"><div class="wf-title" style="color:${colors[i]}">Stage ${i+1}: ${p.text}</div><div class="wf-desc">${p.detail}</div></div>
+    </div>`);
+  });
+}
+
+// ─── BUILD CHECKLIST ────────────────────────────────────────────────────────
+let buildBuilt=false;
+let buildChecks={gpt:new Set(),flowise:new Set(),relevance:new Set()};
+let activePlatform='gpt';
+
+const SYSTEM_PROMPT=`You are ContentPilot, a content strategy assistant.
+
+Your job is to help creators, marketers, and entrepreneurs generate high-quality content assets quickly.
+
+## OUTPUT MODES
+When the user specifies a mode, deliver ONLY that output type:
+- POST IDEAS: Generate 5–7 specific post ideas. Each idea must include: a specific angle (not just a topic), one hook element (number, "why", personal story signal, or counterintuitive claim), and a rough narrative form (story, list, opinion, how-to).
+- SUMMARY: Write a 3–5 sentence TL;DR. First sentence = the one key insight. Remaining sentences = supporting context. Last sentence = practical implication.
+- LINKEDIN POST: Write a post ≤250 words. Hook on line 1. No "In today's digital landscape." Professional but human tone. End with a question or call-to-action.
+- X THREAD: Write 5–7 tweets. Tweet 1 = hook. Tweet 2–6 = the payload. Tweet 7 = CTA/summary. Each tweet ≤280 chars.
+- CONTENT HOOK: Write 3 alternative opening hooks. Each ≤25 words. One data-driven, one curiosity-gap, one personal story trigger.
+
+## RULES (never violate)
+1. Never output generic ideas that could describe 1000 articles ("The future of AI").
+2. Never start with "Great question!" or filler phrases.
+3. Always include the stated audience's perspective.
+4. If no text is provided for a Summary request, ask for the text before responding.
+5. Default tone: professional-but-human. Adapt if user specifies otherwise.`;
+
+const GPT_STEPS=[
+  {id:'g1',title:'Go to GPT Builder',body:'Navigate to <strong>chat.openai.com → Explore GPTs → Create</strong>. Click "Configure" tab (not "Create" — the conversational setup is slower for this purpose).'},
+  {id:'g2',title:'Set Name & Description',body:'Name: <strong>ContentPilot</strong> · Description: <em>"Generates post ideas, summaries, LinkedIn posts, X threads, and content hooks from any topic and audience."</em>'},
+  {id:'g3',title:'Paste the System Prompt',body:'Copy the full system prompt below into the <strong>Instructions</strong> field. This is the most important step — everything else is configuration.',extra:'gpt-prompt'},
+  {id:'g4',title:'Configure conversation starters',body:'Add these 3 starter prompts to help users understand the modes:\n• "Give me 7 post ideas about [your topic] for [your audience]"\n• "Write a LinkedIn post about [topic] in a storytelling tone"\n• "Build an X thread on [topic] for [audience]"'},
+  {id:'g5',title:'Enable Web Browsing (optional)',body:'Toggle on <strong>Web Browsing</strong> under Capabilities if you want ContentPilot to be able to look up recent stats or examples to ground its post ideas.'},
+  {id:'g6',title:'Test with 3 different inputs',body:'Before publishing: test Post Ideas, LinkedIn Post, and X Thread modes with a real topic. Verify specificity — reject outputs with generic ideas and iterate the prompt.'},
+  {id:'g7',title:'Save and share',body:'Click <strong>Save → Anyone with a link</strong>. Copy the GPT link — this is your v1.0 prototype URL. Paste it in your documentation canvas.'},
+];
+const FLOWISE_STEPS=[
+  {id:'f1',title:'Create a New Chatflow',body:'In Flowise, click <strong>Add New → Chatflow</strong>. Name it <strong>ContentPilot v1</strong>.'},
+  {id:'f2',title:'Add a ChatOpenAI (or Anthropic) Node',body:'Drag in a <strong>ChatOpenAI</strong> node (or Claude). Set Temperature: 0.7, Max Tokens: 800, Model: gpt-4o or claude-sonnet.'},
+  {id:'f3',title:'Paste the System Prompt',body:'In the LLM node, paste the full ContentPilot system prompt into the <strong>System Message</strong> field.',extra:'generic-prompt'},
+  {id:'f4',title:'Add a BufferMemory Node',body:'Drag in <strong>BufferMemory</strong> and connect it to the LLM node. This retains context across turns (remembers user\'s topic from earlier in the conversation).'},
+  {id:'f5',title:'Connect and test in the Preview',body:'Click the chat bubble icon to open the Flowise preview. Test all 5 modes. Verify formatting and specificity.'},
+  {id:'f6',title:'Expose as an API or embed',body:'Click <strong>API Endpoint</strong> to get a REST endpoint, or use the <strong>Embed</strong> tab to get an iframe or chat widget you can add to any website.'},
+];
+const RELEVANCE_STEPS=[
+  {id:'r1',title:'Create a New Agent',body:'In Relevance AI, navigate to <strong>Agents → Create Agent</strong>. Name it ContentPilot.'},
+  {id:'r2',title:'Set the Agent Persona',body:'Paste the ContentPilot system prompt into the <strong>System Prompt</strong> field. Under "Agent Type" select LLM Agent (not Tool Chain).'},
+  {id:'r3',title:'Add the System Prompt',body:'Paste the full ContentPilot system prompt into the Instructions field.',extra:'generic-prompt'},
+  {id:'r4',title:'Add a Knowledge Base (optional)',body:'Upload a PDF of your brand voice guidelines or past content examples under <strong>Knowledge → Add File</strong>. ContentPilot will use it for RAG-based personalization.'},
+  {id:'r5',title:'Configure input variables',body:'Add input fields: <strong>topic</strong> (string), <strong>audience</strong> (string), <strong>mode</strong> (dropdown: post_ideas/summary/linkedin/thread/hook). These pre-fill the user message automatically.'},
+  {id:'r6',title:'Deploy and share',body:'Click <strong>Share Agent</strong> to get a shareable URL. Use the API endpoint for integration with Zapier, Make, or your own app.'},
+];
+
+function buildBuildChecklist(){
+  buildBuilt=true;
+  renderChecklist('gpt-checks',GPT_STEPS,'gpt');
+  renderChecklist('flowise-checks',FLOWISE_STEPS,'flowise');
+  renderChecklist('relevance-checks',RELEVANCE_STEPS,'relevance');
+  updateBuildProgress();
+}
+function renderChecklist(containerId,steps,platform){
+  const el=document.getElementById(containerId); el.innerHTML='';
+  steps.forEach(step=>{
+    const div=document.createElement('div'); div.className='check-step'; div.id='cs-'+step.id;
+    let extra='';
+    if(step.extra){
+      const prompt=SYSTEM_PROMPT;
+      extra=`<div class="code-block" style="margin-top:12px"><div class="code-titlebar"><div class="dot" style="background:#ff5f57"></div><div class="dot" style="background:#febc2e;margin-left:6px"></div><div class="dot" style="background:#28c840;margin-left:6px"></div><span style="margin-left:10px">system_prompt.txt</span><button class="copy-btn" onclick="copyPrompt(event)">copy</button></div><div class="code-content" style="font-size:.72rem;color:var(--gray-lt)">${escHtml(prompt)}</div></div>`;
+    }
+    div.innerHTML=`<div class="check-box" id="cb-${step.id}"></div><div style="flex:1"><div class="check-title">${step.title}</div><div class="check-body">${step.body.replace(/\n/g,'<br/>')}${extra}</div></div>`;
+    div.addEventListener('click',()=>toggleCheck(step.id,platform));
+    el.appendChild(div);
+  });
+}
+function toggleCheck(id,platform){
+  const div=document.getElementById('cs-'+id), cb=document.getElementById('cb-'+id);
+  if(div.classList.contains('done')){
+    div.classList.remove('done'); cb.textContent=''; buildChecks[platform].delete(id);
+  } else {
+    div.classList.add('done'); cb.textContent='✓'; buildChecks[platform].add(id);
+  }
+  updateBuildProgress();
+}
+function switchPlatform(p){
+  activePlatform=p;
+  ['gpt','flowise','relevance'].forEach(x=>{
+    document.getElementById('ptab-'+x).classList.toggle('active',x===p);
+    document.getElementById('pp-'+x).classList.toggle('active',x===p);
+  });
+  updateBuildProgress();
+}
+function updateBuildProgress(){
+  const sets={gpt:GPT_STEPS.length,flowise:FLOWISE_STEPS.length,relevance:RELEVANCE_STEPS.length};
+  const done=buildChecks[activePlatform].size;
+  const total=sets[activePlatform];
+  document.getElementById('buildProgress').textContent=`${done} / ${total} steps completed`;
+  sectionScores.build={earned:done,possible:total};
+  if(done>=Math.ceil(total*0.7)){
+    document.getElementById('buildNext').style.display='block';
+    markDone('build');
+  }
+}
+function copyPrompt(e){
+  e.stopPropagation();
+  navigator.clipboard.writeText(SYSTEM_PROMPT).then(()=>{e.target.textContent='copied!';setTimeout(()=>e.target.textContent='copy',1500);});
+}
+function escHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+// ─── TEST (LIVE AGENT) ───────────────────────────────────────────────────────
+let testBuilt=false, activeMode='ideas', triedModes=new Set(), lastRunData={};
+const MODES={
+  ideas:   {label:'Post Ideas',  topicLabel:'Topic / Niche',          showAudience:true,  showTone:true},
+  summary: {label:'Summary',     topicLabel:'Paste your long text…',  showAudience:false, showTone:false},
+  linkedin:{label:'LinkedIn',    topicLabel:'Post Topic',             showAudience:true,  showTone:true},
+  thread:  {label:'X Thread',    topicLabel:'Thread Topic',           showAudience:true,  showTone:false},
+  hook:    {label:'Content Hook',topicLabel:'Topic / Angle',          showAudience:true,  showTone:true},
+};
+
+function buildTest(){testBuilt=true;}
+function setMode(m){
+  activeMode=m;
+  Object.keys(MODES).forEach(k=>{
+    const pill=document.getElementById('mode-'+k);
+    pill.classList.toggle('active',k===m);
+  });
+  const cfg=MODES[m];
+  document.getElementById('topicLabel').textContent=cfg.topicLabel;
+  document.getElementById('topicInput').placeholder=m==='summary'?'Paste article or long-form text here…':m==='ideas'?'e.g. productivity systems for solopreneurs':m==='linkedin'?'e.g. why I stopped using to-do lists':m==='thread'?'e.g. the hidden cost of shallow work':'e.g. why most morning routines fail';
+  document.getElementById('audienceField').style.display=cfg.showAudience?'':'none';
+  document.getElementById('toneField').style.display=cfg.showTone?'':'none';
+  document.getElementById('agentOutput').innerHTML='<div class="agent-placeholder" id="agentPlaceholder" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;color:var(--gray-dk);font-style:italic;font-size:.88rem;line-height:1.8">Mode: <strong style="color:#fff">'+cfg.label+'</strong> selected<br/>Enter your topic and click Generate</div>';
+  document.getElementById('tokenLbl').textContent='';
+}
+
+async function runAgent(){
+  const topic=document.getElementById('topicInput').value.trim();
+  if(!topic){document.getElementById('agentOutput').textContent='⚠ Please enter a topic or paste your text first.';return;}
+  const audience=document.getElementById('audienceInput').value.trim()||'general audience';
+  const tone=document.getElementById('toneInput').value;
+  const btn=document.getElementById('runBtn'), txt=document.getElementById('runBtnTxt');
+  btn.disabled=true; txt.innerHTML='<div class="spinner"></div> Generating…';
+
+  const modeInstructions={
+    ideas:`Generate 5–7 specific post ideas about: "${topic}" for audience: "${audience}". Tone: ${tone}. Each idea must be a specific angle with a hook element — NOT a generic topic title. Format: numbered list, each idea 15–30 words.`,
+    summary:`Write a concise TL;DR summary of the following text. First sentence = the single most important insight. 2–4 supporting sentences. Final sentence = practical implication or next action.\n\nTEXT TO SUMMARIZE:\n${topic}`,
+    linkedin:`Write a LinkedIn post about: "${topic}" for audience: "${audience}". Tone: ${tone}. Max 250 words. Hook on line 1 (no "In today's landscape…"). Professional but human. End with a question or CTA.`,
+    thread:`Write a 6-tweet X thread about: "${topic}" for audience: "${audience}". Tweet 1 = curiosity hook. Tweets 2–5 = the payload (one insight per tweet). Tweet 6 = CTA. Each tweet ≤280 characters. Number each tweet 1/6, 2/6, etc.`,
+    hook:`Write 3 alternative opening hooks for content about: "${topic}" targeting "${audience}". Tone: ${tone}. Each hook ≤25 words. One must be data-driven, one curiosity-gap, one personal story trigger. Label each type.`,
+  };
+
+  const userMsg=modeInstructions[activeMode];
+  const t0=Date.now();
+
+  // Update under the hood - prompt view
+  lastRunData={mode:activeMode,topic,audience,tone,userMsg};
+  updateHoodPrompt();
+
+  try{
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:1000,
+        system:SYSTEM_PROMPT,
+        messages:[{role:'user',content:userMsg}]
+      })
+    });
+    const data=await resp.json();
+    const elapsed=((Date.now()-t0)/1000).toFixed(1);
+    const output=data.content?.[0]?.text||'No response received.';
+    const inputTok=data.usage?.input_tokens||0;
+    const outputTok=data.usage?.output_tokens||0;
+
+    document.getElementById('agentOutput').innerHTML='';
+    document.getElementById('agentOutput').style.cssText='min-height:240px;padding:16px;font-size:.91rem;color:var(--gray-lt);line-height:1.75;white-space:pre-wrap;position:relative';
+    document.getElementById('agentOutput').textContent=output;
+    document.getElementById('tokenLbl').textContent=`${inputTok}in + ${outputTok}out tokens · ${elapsed}s`;
+    lastRunData.output=output; lastRunData.inputTok=inputTok; lastRunData.outputTok=outputTok; lastRunData.elapsed=elapsed;
+    updateHoodRequest();
+    updateHoodMetrics(elapsed,inputTok,outputTok);
+
+    // track mode
+    triedModes.add(activeMode);
+    document.getElementById('mode-'+activeMode).classList.add('tried');
+    document.getElementById('modeCount').textContent=triedModes.size+'/5';
+    sectionScores.test={earned:Math.min(triedModes.size,5),possible:5};
+
+    if(triedModes.size>=3){
+      document.getElementById('testNextBtn').style.display='inline-flex';
+      markDone('test');
+      showTestObs();
+    }
+  } catch(err){
+    document.getElementById('agentOutput').textContent='Error connecting to API. Please check your connection and try again.\n\nError: '+err.message;
+  }
+  btn.disabled=false; txt.innerHTML='⚡ Generate';
+}
+
+function showTestObs(){
+  const el=document.getElementById('testObs'); el.style.display='block';
+  el.innerHTML=`<div class="callout callout-warn"><strong>🧪 Testing observation:</strong> You've tested ${triedModes.size} modes. Notice any patterns? Outputs that are too generic? Formatting that doesn't feel native to the platform? These are your <strong>improvement signals</strong> — you'll diagnose them in the Refine section.</div>`;
+}
+
+// Hood views
+let activeHoodTab='prompt';
+function toggleHood(){
+  const panel=document.getElementById('hoodPanel'),btn=document.getElementById('hoodToggle');
+  panel.classList.toggle('open'); btn.classList.toggle('open');
+  btn.textContent=panel.classList.contains('open')?'✕ Close Hood':'⚙ Under the Hood';
+}
+function switchHood(tab){
+  activeHoodTab=tab;
+  ['prompt','request','metrics'].forEach(t=>{document.getElementById('ht-'+t).classList.toggle('active',t===tab);});
+  if(tab==='prompt') updateHoodPrompt();
+  if(tab==='request') updateHoodRequest();
+  if(tab==='metrics') updateHoodMetrics(lastRunData.elapsed||'—',lastRunData.inputTok||0,lastRunData.outputTok||0);
+}
+function updateHoodPrompt(){
+  if(activeHoodTab!=='prompt')return;
+  document.getElementById('hoodContent').innerHTML=`<span class="ht">// SYSTEM PROMPT (sent with every request)</span>\n`+escHtml(SYSTEM_PROMPT).replace(/##.*$/gm,s=>`<span class="ht">${s}</span>`).replace(/RULE.*$/gm,s=>`<span class="hv">${s}</span>`);
+}
+function updateHoodRequest(){
+  if(activeHoodTab!=='request')return;
+  const d=lastRunData;
+  document.getElementById('hoodContent').innerHTML=`<span class="ht">POST</span> https://api.anthropic.com/v1/messages\n\n{
+  <span class="hv">"model"</span>: "claude-sonnet-4-20250514",
+  <span class="hv">"max_tokens"</span>: 1000,
+  <span class="hv">"system"</span>: "[ContentPilot system prompt]",
+  <span class="hv">"messages"</span>: [{
+    <span class="hv">"role"</span>: "user",
+    <span class="hv">"content"</span>: <span class="hv">"${escHtml((d.userMsg||'').substring(0,120))}…"</span>
+  }]
+}
+
+<span class="hc">// MODE: ${d.mode||'—'} · TOPIC: ${escHtml(d.topic||'—')}</span>
+<span class="hc">// AUDIENCE: ${escHtml(d.audience||'—')} · TONE: ${d.tone||'—'}</span>`;
+}
+function updateHoodMetrics(elapsed,inputTok,outputTok){
+  if(activeHoodTab!=='metrics')return;
+  document.getElementById('hoodContent').innerHTML=`<span class="ht">// LIVE METRICS — last run</span>
+
+Latency:        <span class="hv">${elapsed}s</span>
+Input tokens:   <span class="hv">${inputTok}</span>
+Output tokens:  <span class="hv">${outputTok}</span>
+Total tokens:   <span class="hv">${inputTok+outputTok}</span>
+Est. cost:      <span class="hv">~$${((inputTok*0.000003)+(outputTok*0.000015)).toFixed(5)}</span>
+
+Modes tried:    <span class="hv">${[...triedModes].join(', ')||'none yet'}</span>`;
+}
+
+// ─── REFINE ───────────────────────────────────────────────────────────────────
+let refineBuilt=false, refineAnswered=false;
+const METRICS=[
+  {label:'Response Latency',val:94,target:'>90%',color:'var(--green)',  delta:'+6% since v0.9',good:true},
+  {label:'Format Adherence',val:82,target:'>80%',color:'var(--green)',  delta:'+14% since v0.9',good:true},
+  {label:'Tone Alignment',  val:87,target:'>80%',color:'var(--green)',  delta:'stable',good:true},
+  {label:'Idea Specificity',val:54,target:'>80%',color:'var(--GA-red)', delta:'-3% since v0.9',good:false},
+  {label:'Output Usability',val:71,target:'>80%',color:'var(--yellow)', delta:'+8% since v0.9',good:true},
+];
+
+function buildRefine(){
+  refineBuilt=true;
+  const grid=document.getElementById('metricsGrid');
+  METRICS.forEach(m=>{
+    const col=m.val>=80?'var(--green)':m.val>=65?'var(--yellow)':'var(--GA-red)';
+    grid.insertAdjacentHTML('beforeend',`<div class="metric-card">
+      <div class="metric-val" style="color:${col}">${m.val}%</div>
+      <div class="metric-lbl">${m.label}<br/><span style="color:var(--gray-dk)">Target: ${m.target}</span></div>
+      <div class="metric-bar"><div class="metric-fill" style="width:0%;background:${col}" data-w="${m.val}"></div></div>
+      <div class="metric-delta" style="color:${m.good?'var(--green)':'var(--GA-red)'}">${m.delta}</div>
+    </div>`);
+  });
+  // animate bars
+  setTimeout(()=>document.querySelectorAll('.metric-fill').forEach(b=>b.style.width=b.dataset.w+'%'),100);
+
+  const opts=[
+    {k:'A',text:'Format Adherence (82%) — still 18% below ideal, needs immediate attention.',ans:false,fb:'82% is above the stated target of >80%. This metric is already passing. Improving a passing metric by a few percentage points is lower leverage than rescuing a failing one that directly affects core value.'},
+    {k:'B',text:'Response Latency (94%) — users are waiting too long, this is the biggest friction point.',ans:false,fb:'94% latency compliance is a strong result and already above target. Latency at this level is not a major user friction point — and improving it further yields diminishing returns without a fundamental architecture change.'},
+    {k:'C',text:'Idea Specificity (54%) — failing by 26 points against a core output dimension. Generic ideas defeat the purpose of the agent and directly erode its value proposition.',ans:true,fb:'Correct. 54% is 26 points below target on the metric that defines ContentPilot\'s core value: giving creators content they can actually use without rewriting. A generic post idea is zero value — the agent might as well not have run. This is the highest-leverage fix because it addresses the deepest failure in the output quality chain.'},
+    {k:'D',text:'Output Usability (71%) — the most comprehensive metric, fixing it will raise all others.',ans:false,fb:'Output Usability is a composite metric — it reflects idea specificity, tone, and format together. The way to move Output Usability is to fix its root causes, of which Idea Specificity (54%) is the largest contributor. Fixing the root cause is higher leverage than targeting the composite.'},
+  ];
+  const el=document.getElementById('refineOpts');
+  const L=['A','B','C','D'];
+  opts.forEach((opt,i)=>{
+    const btn=document.createElement('button'); btn.className='mcq-opt';
+    btn.innerHTML=`<div class="opt-k">${L[i]}</div><div>${opt.text}</div>`;
+    btn.addEventListener('click',()=>{
+      if(refineAnswered)return; refineAnswered=true;
+      el.querySelectorAll('.mcq-opt').forEach((b,j)=>{
+        b.classList.add('disabled');
+        if(opts[j].ans)b.classList.add('correct');
+        else if(b===btn&&!opt.ans)b.classList.add('wrong');
+      });
+      const fb=document.getElementById('refineFB');
+      fb.className='mcq-fb show '+(opt.ans?'ok':'bad');
+      fb.innerHTML=`<strong>${opt.ans?'✓ Correct:':'Not quite:'}</strong> ${opt.fb}`;
+      sectionScores.refine={earned:opt.ans?1:0,possible:1};
+      setTimeout(()=>{
+        document.getElementById('refineDetail').style.display='block';
+        document.getElementById('refineDetail').scrollIntoView({behavior:'smooth',block:'start'});
+      },400);
+      markDone('refine');
+    });
+    el.appendChild(btn);
+  });
+}
+
+// ─── DOCUMENT ────────────────────────────────────────────────────────────────
+let docBuilt=false, docSubmitted=false;
+const DOC_SECTIONS=[
+  {id:'purpose',label:'1. Agent Purpose Statement',hint:'1–2 sentences. Who uses it, what it does, and what "good output" means. This should be falsifiable — specific enough that you can tell if it\'s working.',placeholder:'ContentPilot is a content strategy agent for [audience] that generates [output types] from a topic and target audience. A successful output is [specific criteria]…'},
+  {id:'workflow',label:'2. Agent Workflow (8 Stages)',hint:'List the 8 pipeline stages in order. For each, note the input it receives and the output it hands to the next stage.',placeholder:'Stage 1: Receive & validate input → Stage 2: Retrieve memory context → Stage 3: Construct prompt → …'},
+  {id:'prompt',label:'3. System Prompt Design Decisions',hint:'What are the 3 most important rules in your system prompt, and WHY did you write each one? What failure mode does each rule prevent?',placeholder:'Rule 1: "Never output generic ideas" — prevents the most common failure: ideas like "Write about AI" that require complete rewriting before use. Rule 2: …'},
+  {id:'improvement',label:'4. Improvement Identified in Testing',hint:'Describe the one improvement you identified from the beta metrics. What metric failed? What\'s the root cause? What\'s the prompt fix?',placeholder:'The highest-priority improvement identified is Idea Specificity (54% vs. 80% target). Root cause: the system prompt did not specify the required angle/hook structure. Fix: added RULE requiring each idea to include a specific angle, one hook element, and a rough narrative form.'},
+  {id:'nextver',label:'5. Version 1.1 Plan',hint:'What\'s the single most impactful thing you\'d add to v1.1? Be specific — not "make it better" but a concrete feature, prompt change, or tool integration with expected metric impact.',placeholder:'v1.1: Add a Brand Voice Calibration step. Before generating content, ask the user to paste one example of their best-performing post. Use it as few-shot context in the prompt. Expected impact: Tone Alignment improves from 87% → 93%+ and Output Usability from 71% → 82%+.'},
+  {id:'ethics',label:'6. Ethical Considerations',hint:'Name 2 potential ethical risks in this agent\'s deployment and the guardrail for each. Think about misinformation, bias in outputs, data privacy, and misuse potential.',placeholder:'Risk 1: Generating misinformation if used with web search — guardrail: require source citation for any factual claims. Risk 2: Amplifying biased content patterns — guardrail: system prompt rule prohibiting stereotypical framings…'},
+];
+function buildDoc(){
+  docBuilt=true;
+  const el=document.getElementById('docCanvas');
+  DOC_SECTIONS.forEach(s=>{
+    const div=document.createElement('div'); div.className='c-section'; div.id='ds-'+s.id;
+    div.innerHTML=`<div class="c-label">${s.label}</div><div class="c-hint">${s.hint}</div><textarea class="c-textarea" id="dt-${s.id}" placeholder="${s.placeholder}" oninput="checkDoc('${s.id}')"></textarea>`;
+    el.appendChild(div);
+  });
+}
+function checkDoc(id){
+  const val=document.getElementById('dt-'+id).value.trim();
+  document.getElementById('ds-'+id).classList.toggle('filled',val.length>40);
+}
+function submitDoc(){
+  if(docSubmitted)return; docSubmitted=true;
+  let filled=0;
+  DOC_SECTIONS.forEach(s=>{if(document.getElementById('dt-'+s.id).value.trim().length>40)filled++;});
+  sectionScores.document={earned:filled,possible:6};
+  const pct=Math.round(filled/6*100);
+  document.getElementById('docResult').style.display='block';
+  document.getElementById('docResult').innerHTML=`<div class="callout ${pct>=80?'callout-success':'callout-warn'}">
+    <strong>${filled}/6 sections completed (${pct}%)</strong> — ${pct>=100?'Complete spec document. This is production-ready documentation.':pct>=66?'Good start. Empty sections create implementation ambiguity — engineers fill blanks with their own assumptions.':'A spec with empty sections is an incomplete contract. Fill them all before handing this to a team.'}
+  </div>`;
+  document.getElementById('docSubmitBtn').style.display='none';
+  document.getElementById('docNextBtn').style.display='inline-flex';
+}
+
+// ─── QUIZ ─────────────────────────────────────────────────────────────────────
+const QUESTIONS=[
+  {q:'What is the correct role of a system prompt in an agent like ContentPilot?',
+   opts:['It controls the UI layout and visual formatting of outputs','It defines the agent\'s persona, rules, output format, and failure prevention logic — it IS the agent\'s intelligence layer','It is optional — the agent can function without one using default model behavior','It is only used for authentication and access control'],
+   ans:1,ok:'Correct. The system prompt is the agent\'s brain. It defines who it is, what it does, what it must never do, and how it should format every output. Every agent behavior you want to rely on must be in the system prompt — default model behavior is unpredictable and product-inconsistent.',
+   bad:'Not quite. The system prompt is the most important component of an agent. It defines persona, rules, output structure, and edge case handling. Without a well-crafted system prompt, the agent has no consistent identity or behavior — it\'s just a raw language model.'},
+  {q:'In the ContentPilot pipeline, why must input validation happen BEFORE the LLM call?',
+   opts:['It is just a convention — the order doesn\'t actually affect outputs','Validation prevents malformed, empty, or adversarial inputs from consuming tokens and producing useless outputs. Garbage in = garbage out, at cost.','The LLM requires clean input to parse correctly at the token level','Input validation is a security step that prevents prompt injection attacks only'],
+   ans:1,ok:'Correct. Validation before the LLM call has two benefits: (1) it prevents wasted compute and API cost on bad inputs, and (2) it ensures the model gets structured, clean context to reason from. An empty topic field sent to the LLM produces a hallucinated response — the model makes something up. Validation is your first quality gate.',
+   bad:'Not quite. The order matters significantly. Sending empty, malformed, or adversarial inputs to the LLM wastes tokens, produces low-quality outputs, and in the case of prompt injection, could cause the agent to behave unexpectedly. Validation is your quality and security gate before expensive inference.'},
+  {q:'ContentPilot\'s Idea Specificity metric is at 54%. What is the most effective single fix?',
+   opts:['Switch to a larger model (GPT-4o instead of GPT-3.5)','Increase the temperature parameter to generate more creative outputs','Add explicit rules to the system prompt specifying the required structure of each idea: specific angle + hook element + narrative form','Ask users to provide more detailed topic descriptions'],
+   ans:2,ok:'Correct. The specificity failure is a prompt engineering problem, not a model capability problem. The system prompt didn\'t tell the model what "specific" means. Adding a concrete rule with a BAD example and a GOOD example is the highest-leverage fix — it changes model behavior at the definition level without any infrastructure changes.',
+   bad:'Not quite. Idea Specificity is a prompt engineering problem. The model isn\'t being told what "specific" means — so it defaults to safe, generic topic titles. Adding explicit rules to the system prompt with BAD/GOOD examples is the highest-leverage fix. Switching models is expensive and doesn\'t address the root cause.'},
+  {q:'What does "iterative refinement" mean in the context of agent development?',
+   opts:['Rewriting the agent from scratch after every test run','Measuring performance against defined criteria, identifying the highest-impact failure mode, implementing one targeted fix, then re-measuring to confirm improvement','Making small random changes until the agent seems better','Collecting user feedback surveys and summarizing themes'],
+   ans:1,ok:'Correct. Iterative refinement is a structured loop: measure → diagnose → hypothesize fix → implement → re-measure. The key word is "targeted" — you fix the specific root cause of the specific failure, not a vague improvement. And you confirm improvement with data, not intuition.',
+   bad:'Not quite. Iterative refinement is a disciplined cycle: (1) measure against defined success criteria, (2) identify the root cause of the largest gap, (3) implement one targeted fix, (4) re-measure to confirm improvement. Random changes without measurement are not refinement — they\'re guessing.'},
+  {q:'Why is the "log interaction & update memory" stage placed LAST in the ContentPilot pipeline?',
+   opts:['It\'s a low-priority step and can be skipped','Logging last ensures you capture the final delivered output — not a draft. Memory updates should reflect what the user actually received, including any post-processing formatting changes.','The logging API is slower and would delay the user\'s response if called earlier','It is required by GDPR to log after delivery'],
+   ans:1,ok:'Correct. Logging the final output (after validation and formatting) gives you an accurate record of what the user actually received. Logging a pre-formatted output would mean your memory data doesn\'t match your user\'s experience — leading to inconsistencies when that memory is used as context in future sessions.',
+   bad:'Not quite. The placement matters for data accuracy. Logging after all pipeline stages means you capture the final delivered output — including any formatting transformations that happened after the LLM call. Memory built from pre-formatted outputs causes future responses to drift from the user\'s actual experience.'},
+  {q:'A user pastes a long article and asks ContentPilot for a summary, but the system prompt requires it to ask for the text if none is provided. What should the agent do?',
+   opts:['Always ask for text before summarizing, even when text is provided','Skip the summary mode and switch to post ideas instead','Proceed with the summary since text is provided — the rule only applies when the field is empty','Refuse to process long inputs for safety reasons'],
+   ans:2,ok:'Correct. Rules in system prompts should be interpreted by their intent, not literally. The rule "ask for the text before responding" exists to prevent hallucination when no text is provided — it is not meant to block the agent when text is actually present. This is a good example of writing rules clearly enough that the model can distinguish when they apply.',
+   bad:'Not quite. System prompt rules should be triggered by the condition they were written to prevent. This rule prevents hallucination when no text is available — but when text is provided, the condition is satisfied and the agent should proceed. A rule that fires when it shouldn\'t creates worse UX than no rule at all.'},
+  {q:'What is the most important thing a spec document does for an agent prototype?',
+   opts:['It satisfies legal and compliance requirements for AI systems','It makes the agent reproducible and improvable — a future team member can understand the intent, re-implement it correctly, and know exactly what to measure to evaluate success','It prevents the model from being fine-tuned without permission','It automatically generates unit tests for the agent\'s behavior'],
+   ans:1,ok:'Correct. Documentation is the difference between a one-time demo and a product. A good spec document encodes the designer\'s intent — so the agent can be rebuilt, improved, handed off, or evaluated against a clear standard. Without it, every iteration requires re-discovery of decisions that were already made.',
+   bad:'Not quite. The most practical function of a spec document is to make the agent reproducible and improvable. It captures the reasoning behind design decisions, defines success criteria, and gives future engineers and product managers a single source of truth — so iteration builds on what was learned, not on guesswork.'},
+];
+
+let qIdx=0,qScore=0,qStarted=false,qAnswered=false;
+function initQuiz(){qStarted=true;qIdx=0;qScore=0;showQ();}
+function showQ(){
+  qAnswered=false;
+  const q=QUESTIONS[qIdx];
+  document.getElementById('qProg').style.width=(qIdx/QUESTIONS.length*100)+'%';
+  document.getElementById('qMeta').textContent=`Question ${qIdx+1} of ${QUESTIONS.length}`;
+  document.getElementById('qScoreTxt').textContent=`Score: ${qScore} / ${qIdx}`;
+  document.getElementById('quizQ').textContent=q.q;
+  document.getElementById('quizFB').className='fb-box'; document.getElementById('quizFB').innerHTML='';
+  document.getElementById('qNextBtn').style.display='none';
+  const L=['A','B','C','D'];
+  document.getElementById('quizOpts').innerHTML=q.opts.map((o,i)=>
+    `<button class="q-opt" onclick="answerQ(${i})"><div class="q-opt-k">${L[i]}</div>${o}</button>`
+  ).join('');
+}
+function answerQ(i){
+  if(qAnswered)return; qAnswered=true;
+  const q=QUESTIONS[qIdx]; const ok=i===q.ans; if(ok)qScore++;
+  document.querySelectorAll('.q-opt').forEach((el,idx)=>{
+    el.classList.add('disabled');
+    if(idx===q.ans)el.classList.add('correct');
+    else if(idx===i&&!ok)el.classList.add('wrong');
+  });
+  const fb=document.getElementById('quizFB');
+  fb.innerHTML=`<span style="font-size:1.1rem;flex-shrink:0">${ok?'✓':'✗'}</span><span>${ok?q.ok:q.bad}</span>`;
+  fb.className='fb-box show '+(ok?'ok':'bad');
+  document.getElementById('qScoreTxt').textContent=`Score: ${qScore} / ${qIdx+1}`;
+  document.getElementById('qNextBtn').style.display='inline-flex';
+  if(qIdx===QUESTIONS.length-1)document.getElementById('qNextBtn').textContent='See Final Results →';
+}
+function nextQ(){qIdx++;if(qIdx>=QUESTIONS.length){showQuizDone();return;}showQ();}
+function showQuizDone(){
+  document.getElementById('quizActive').style.display='none';
+  document.getElementById('quizDone').style.display='block';
+  const pct=Math.round(qScore/QUESTIONS.length*100);
+  sectionScores.quiz={earned:qScore,possible:QUESTIONS.length};
+  if(pct>=70)markDone('quiz');
+  document.getElementById('qBadge').innerHTML=`<span style="background:${pct>=70?'rgba(34,197,94,.15)':'rgba(232,51,58,.15)'};color:${pct>=70?'var(--green)':'var(--GA-red)'};padding:3px 10px;border-radius:20px;font-size:.85rem;font-weight:700">${qScore}/${QUESTIONS.length} · ${pct}%</span>`;
+  document.getElementById('qMsg').textContent=pct>=90?`${pct}% — exceptional. You understand agent design, evaluation, and iteration end-to-end.`:pct>=70?`${pct}% — solid foundations. You're ready to build and iterate production-grade agents.`:`${pct}% — review the Plan, Refine, and Document sections. Focus on the relationship between system prompts and agent behavior.`;
+}
+
+// ─── RESULTS ─────────────────────────────────────────────────────────────────
+function buildResults(){
+  const scoreMap=[
+    {label:'Workflow Planning',       e:sectionScores.plan?.earned||0,    p:8},
+    {label:'Platform Build',          e:sectionScores.build?.earned||0,   p:7},
+    {label:'Live Agent Testing',      e:sectionScores.test?.earned||0,    p:5},
+    {label:'Performance Diagnosis',   e:sectionScores.refine?.earned||0,  p:1},
+    {label:'Agent Documentation',     e:sectionScores.document?.earned||0,p:6},
+    {label:'Knowledge Check',         e:sectionScores.quiz?.earned||0,    p:7},
+  ];
+  const te=scoreMap.reduce((s,x)=>s+x.e,0);
+  const tp=scoreMap.reduce((s,x)=>s+x.p,0);
+  const pct=tp>0?Math.round(te/tp*100):0;
+  const grade=pct>=90?{l:'Agent Architect',e:'🏗',m:'End-to-end mastery — planning, building, testing, measuring, and documenting a production-ready agent.'}
+             :pct>=70?{l:'Prototype Engineer',e:'⚙️',m:'Strong technical execution. Your workflow sequencing, build, and documentation are solid.'}
+             :pct>=50?{l:'Agent Builder',e:'🔨',m:'Good foundations. Revisit the Refine and Document sections to strengthen your iteration instincts.'}
+                     :{l:'Explorer',e:'🔍',m:'Start from the Plan section — the pipeline stages build on each other sequentially.'};
+  const circ=2*Math.PI*52,dash=circ*(1-pct/100);
+  const rows=scoreMap.map(item=>{
+    const p=item.p>0?Math.round(item.e/item.p*100):0;
+    const col=p>=80?'var(--green)':p>=50?'var(--yellow)':'var(--GA-red)';
+    return `<div class="score-row">
+      <div style="width:8px;height:8px;border-radius:50%;background:${col};flex-shrink:0"></div>
+      <span style="flex:1;font-size:.9rem;font-weight:500;color:var(--gray-lt)">${item.label}</span>
+      <div class="score-bar-wrap"><div class="score-bar-fill" style="width:${p}%;background:${col}"></div></div>
+      <span style="font-size:.82rem;color:var(--gray);min-width:38px;text-align:right">${item.e}/${item.p}</span>
+      <span style="background:${p>=80?'rgba(34,197,94,.15)':p>=50?'rgba(245,197,24,.15)':'rgba(232,51,58,.15)'};color:${col};padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;min-width:40px;text-align:center">${p}%</span>
+    </div>`;
+  }).join('');
+  const takeaways=[
+    'The system prompt is the agent. Everything you want the agent to do reliably must be written explicitly — with examples, anti-examples, and edge case rules. Default model behavior is a starting point, not a specification. The difference between a 54% Idea Specificity score and an 80% score is almost always a few lines of prompt engineering.',
+    'Measurement drives iteration. You can\'t improve what you don\'t measure. Defining success criteria before you build — and then testing against them — is what separates a product from a demo. The Idea Specificity failure was only discoverable because there was a defined target. Without the target, "ideas were generated" would have been called success.',
+    'Documentation is the handoff contract. A prototype that only exists in one developer\'s head is not a product. Every design decision you made — why you ordered the pipeline stages the way you did, why you wrote that anti-hallucination rule, what metric defines the next iteration — belongs in writing. You built ContentPilot in this lab. The documentation you wrote is how it survives past today.',
+  ].map((t,i)=>`<div class="tk-item"><div class="tk-num">0${i+1}</div><div style="font-size:.92rem;color:var(--gray-lt);line-height:1.7">${t}</div></div>`).join('');
+  document.getElementById('resultsBody').innerHTML=`
+    <div style="display:flex;align-items:center;gap:28px;flex-wrap:wrap;padding-bottom:36px;border-bottom:1px solid var(--line);margin-bottom:32px">
+      <div style="position:relative;width:120px;height:120px;flex-shrink:0">
+        <svg width="120" height="120" style="transform:rotate(-90deg)" viewBox="0 0 120 120">
+          <circle cx="60" cy="60" r="52" fill="none" stroke="var(--black3)" stroke-width="8"/>
+          <circle cx="60" cy="60" r="52" fill="none" stroke="var(--GA-red)" stroke-width="8"
+            stroke-dasharray="${circ.toFixed(1)}" stroke-dashoffset="${dash.toFixed(1)}"
+            stroke-linecap="round" style="transition:stroke-dashoffset 1.2s ease"/>
+        </svg>
+        <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center">
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:2rem;font-weight:900;line-height:1">${pct}%</div>
+          <div style="font-size:.7rem;color:var(--gray);letter-spacing:.1em;text-transform:uppercase;margin-top:2px">score</div>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:2rem;margin-bottom:4px">${grade.e}</div>
+        <h2 style="font-size:clamp(2rem,5vw,2.8rem);margin-bottom:6px">${grade.l}</h2>
+        <p style="color:var(--gray-lt);font-size:.95rem">${grade.m}</p>
+        <p style="color:var(--gray-dk);font-size:.82rem;margin-top:6px;font-family:'JetBrains Mono',monospace">${te} pts earned · ${tp} pts possible</p>
+      </div>
+    </div>
+    <span class="eyebrow">Score Breakdown</span>
+    <div class="card" style="padding:8px 20px;margin-bottom:28px">${rows}</div>
+    <span class="eyebrow">Three Things to Carry Forward</span>
+    <div class="card" style="padding:8px 20px;margin-bottom:24px">${takeaways}</div>
+    <div style="background:linear-gradient(135deg,rgba(232,51,58,.08) 0%,rgba(168,85,247,.08) 100%);border:1px solid rgba(232,51,58,.2);border-radius:var(--r-lg);padding:28px">
+      <div style="font-size:2rem;margin-bottom:10px">🎓</div>
+      <h3 style="font-family:'Barlow Condensed',sans-serif;font-size:1.6rem;font-weight:800;color:#fff;margin-bottom:10px">Build AI Agents — Course Complete</h3>
+      <p style="font-size:.95rem;color:var(--gray-lt);line-height:1.8;max-width:640px">You've gone from agent anatomy to a functioning, measured, documented prototype. You know how agents work internally, how to design the dialogue that drives them, how to secure them, how to evaluate their performance, and how to iterate based on data — not guesses.<br/><br/>
+      <strong style="color:#fff">ContentPilot v1.0 is your proof of concept.</strong> The spec document you wrote is the brief for v1.1. The improvement you identified is your first ticket. That's the full product development loop — in one lab.</p>
+    </div>`;
+}
+</script>
+</body>
+</html>
