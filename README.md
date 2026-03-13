@@ -382,3 +382,8 @@ https://pages.git.generalassemb.ly/Build-AI-Agents/Building-Your-First-Full-Agen
 - [LangChain — Build Your First Agent](https://python.langchain.com/docs/tutorials/agents/)
 - Anthropic — *Prompt Engineering Overview* — [docs.anthropic.com](https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/overview)
 - [Google PAIR Guidebook — Prototyping AI Systems](https://pair.withgoogle.com/guidebook/chapters)
+
+
+---
+
+*General Assembly · Build AI Agents · BAA 16.0 · © 2026*
