@@ -358,7 +358,7 @@ This protocol prevents the most common refinement mistake: changing multiple thi
 
 ## 4. Lab: Functional Prototype (90 min)
 
-https://pages.git.generalassemb.ly/Build-AI-Agents/Building-Your-First-Full-Agent/
+https://ga-curriculum.github.io/building-your-first-full-agent/
 
 ---
 
